@@ -2,36 +2,51 @@ package com.socrata.regioncoder
 
 import org.scalatra._
 import scalate.ScalateSupport
-import org.fusesource.scalate.{ TemplateEngine, Binding }
-import org.fusesource.scalate.layout.DefaultLayoutStrategy
-import javax.servlet.http.HttpServletRequest
-import collection.mutable
+import org.scalatra.json.JacksonJsonSupport
+import org.json4s.{DefaultFormats, Formats}
+import org.slf4j.LoggerFactory
 
-trait RegionCoderStack extends ScalatraServlet with ScalateSupport {
+trait RegionCoderStack extends ScalatraServlet
+with ScalateSupport with JacksonJsonSupport with FutureSupport with ScalatraLogging {
 
-  /* wire up the precompiled templates */
-  override protected def defaultTemplatePath: List[String] = List("/WEB-INF/templates/views")
-  override protected def createTemplateEngine(config: ConfigT) = {
-    val engine = super.createTemplateEngine(config)
-    engine.layoutStrategy = new DefaultLayoutStrategy(engine,
-      TemplateEngine.templateTypes.map("/WEB-INF/templates/layouts/default." + _): _*)
-    engine.packagePrefix = "templates"
-    engine
+  // Sets up automatic case class to JSON output serialization, required by
+  // the JValueResult trait.
+  protected implicit val jsonFormats: Formats = DefaultFormats + new NoneSerializer
+
+  // For FutureSupport / async stuff
+  protected implicit val executor = concurrent.ExecutionContext.Implicits.global
+
+  // Before every action runs, set the content type to be in JSON format.
+  before() {
+    contentType = formats("json")
   }
-  /* end wiring up the precompiled templates */
-  
-  override protected def templateAttributes(implicit request: HttpServletRequest): mutable.Map[String, Any] = {
-    super.templateAttributes ++ mutable.Map.empty // Add extra attributes here, they need bindings in the build file
-  }
-  
 
+  error {
+    case e: Exception =>
+      logger.error("Request errored out", e)
+      InternalServerError(s"${e.getClass.getSimpleName}: ${e.getMessage}\n${e.getStackTraceString}\n")
+  }
+
+  // What to do in case a route is not found.  This is from the Scalatra template
   notFound {
     // remove content type in case it was set through an action
-    contentType = null
+    contentType = ""
     // Try to render a ScalateTemplate if no route matched
     findTemplate(requestPath) map { path =>
       contentType = "text/html"
       layoutTemplate(path)
     } orElse serveStaticResource() getOrElse resourceNotFound()
+  }
+}
+
+// TODO: Move this to thirdparty-utils
+trait ScalatraLogging extends ScalatraServlet {
+  val logger = LoggerFactory.getLogger(getClass)
+  before() {
+    logger.info(request.getMethod + " - " + request.getRequestURI + " ? " + request.getQueryString)
+  }
+
+  after() {
+    logger.info("Status - " + response.getStatus)
   }
 }

@@ -4,7 +4,6 @@ import org.scalatra._
 import scalate.ScalateSupport
 
 class RegionCoderServlet extends RegionCoderStack {
-
   get("/") {
     <html>
       <body>
@@ -13,5 +12,4 @@ class RegionCoderServlet extends RegionCoderStack {
       </body>
     </html>
   }
-  
 }
