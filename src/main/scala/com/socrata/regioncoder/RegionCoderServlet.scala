@@ -1,7 +1,6 @@
 package com.socrata.regioncoder
 
 import org.scalatra._
-import scalate.ScalateSupport
 
 class RegionCoderServlet extends RegionCoderStack {
   get("/") {

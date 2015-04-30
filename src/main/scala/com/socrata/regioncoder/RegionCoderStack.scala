@@ -1,13 +1,12 @@
 package com.socrata.regioncoder
 
 import org.scalatra._
-import scalate.ScalateSupport
 import org.scalatra.json.JacksonJsonSupport
 import org.json4s.{DefaultFormats, Formats}
 import org.slf4j.LoggerFactory
 
 trait RegionCoderStack extends ScalatraServlet
-with ScalateSupport with JacksonJsonSupport with FutureSupport with ScalatraLogging {
+  with JacksonJsonSupport with FutureSupport with ScalatraLogging {
 
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
@@ -25,17 +24,6 @@ with ScalateSupport with JacksonJsonSupport with FutureSupport with ScalatraLogg
     case e: Exception =>
       logger.error("Request errored out", e)
       InternalServerError(s"${e.getClass.getSimpleName}: ${e.getMessage}\n${e.getStackTraceString}\n")
-  }
-
-  // What to do in case a route is not found.  This is from the Scalatra template
-  notFound {
-    // remove content type in case it was set through an action
-    contentType = ""
-    // Try to render a ScalateTemplate if no route matched
-    findTemplate(requestPath) map { path =>
-      contentType = "text/html"
-      layoutTemplate(path)
-    } orElse serveStaticResource() getOrElse resourceNotFound()
   }
 }
 
