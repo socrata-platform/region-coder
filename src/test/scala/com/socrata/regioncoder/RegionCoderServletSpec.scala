@@ -1,7 +1,7 @@
 package com.socrata.regioncoder
 
-import org.scalatra.test.scalatest.ScalatraSuite
 import org.scalatest.FunSuiteLike
+import org.scalatra.test.scalatest.ScalatraSuite
 
 class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike {
   test("index page") {

@@ -1,12 +1,13 @@
 package com.socrata.regioncoder
 
+import com.socrata.thirdparty.metrics.Metrics
+import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json.JacksonJsonSupport
-import org.json4s.{DefaultFormats, Formats}
 import org.slf4j.LoggerFactory
 
 trait RegionCoderStack extends ScalatraServlet
-  with JacksonJsonSupport with FutureSupport with ScalatraLogging {
+  with JacksonJsonSupport with FutureSupport with ScalatraLogging with Metrics {
 
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
@@ -14,6 +15,8 @@ trait RegionCoderStack extends ScalatraServlet
 
   // For FutureSupport / async stuff
   protected implicit val executor = concurrent.ExecutionContext.Implicits.global
+
+  protected val timer = metrics.timer("region-coding-requests")
 
   // Before every action runs, set the content type to be in JSON format.
   before() {

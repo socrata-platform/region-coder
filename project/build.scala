@@ -28,7 +28,12 @@ object RegionCoderBuild extends Build {
         "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container",
         "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container",
         "javax.servlet" % "javax.servlet-api" % "3.1.0",
-        "org.json4s"               %% "json4s-jackson"      % "3.2.6"
+        "org.json4s"               %% "json4s-jackson"      % "3.2.6",
+        "com.socrata"              %% "socrata-thirdparty-utils"  % "3.0.0",
+        "nl.grons"                 %% "metrics-scala"             % "3.3.0",
+        "com.socrata"              %% "geospace-library"    % "0.4.6",
+        "com.socrata"              %% "soda-fountain-external"    % "0.5.0",
+        "com.socrata"              %% "socrata-http-client"       % "3.1.1"
       ),
       sourceGenerators in Compile <+= buildInfo,
       buildInfoPackage := "com.socrata.regioncoder",
