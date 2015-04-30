@@ -19,22 +19,7 @@ object RegionCoderBuild extends Build {
       scalaVersion := "2.10.4",
       port in Conf := 2021,
       resolvers += Classpaths.typesafeReleases,
-      resolvers += "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
-      libraryDependencies ++= Seq(
-        "org.scalatra" %% "scalatra" % ScalatraVersion,
-        "org.scalatra"             %% "scalatra-json"       % ScalatraVersion,
-        "org.scalatra"             %% "scalatra-scalatest"  % ScalatraVersion   % "test",
-        "ch.qos.logback" % "logback-classic" % "1.1.2" % "runtime",
-        "org.eclipse.jetty" % "jetty-webapp" % "9.1.5.v20140505" % "container",
-        "org.eclipse.jetty" % "jetty-plus" % "9.1.5.v20140505" % "container",
-        "javax.servlet" % "javax.servlet-api" % "3.1.0",
-        "org.json4s"               %% "json4s-jackson"      % "3.2.6",
-        "com.socrata"              %% "socrata-thirdparty-utils"  % "3.0.0",
-        "nl.grons"                 %% "metrics-scala"             % "3.3.0",
-        "com.socrata"              %% "geospace-library"    % "0.4.6",
-        "com.socrata"              %% "soda-fountain-external"    % "0.5.0",
-        "com.socrata"              %% "socrata-http-client"       % "3.1.1"
-      ),
+      libraryDependencies ++= scalatraDeps ++ socrataDeps,
       sourceGenerators in Compile <+= buildInfo,
       buildInfoPackage := "com.socrata.regioncoder",
       buildInfoKeys := Seq[BuildInfoKey](
@@ -45,5 +30,24 @@ object RegionCoderBuild extends Build {
         BuildInfoKey.action("buildTime") { System.currentTimeMillis }
       )
     )
+  )
+
+  lazy val scalatraDeps = Seq(
+    "ch.qos.logback"    % "logback-classic"    % "1.1.2" % "runtime",
+    "javax.servlet"     % "javax.servlet-api"  % "3.1.0",
+    "org.eclipse.jetty" % "jetty-plus"         % "9.1.5.v20140505" % "container",
+    "org.eclipse.jetty" % "jetty-webapp"       % "9.1.5.v20140505" % "container",
+    "org.json4s"       %% "json4s-jackson"     % "3.2.6",
+    "org.scalatra"     %% "scalatra"           % ScalatraVersion,
+    "org.scalatra"     %% "scalatra-json"      % ScalatraVersion,
+    "org.scalatra"     %% "scalatra-scalatest" % ScalatraVersion % "test"
+  )
+
+  lazy val socrataDeps = Seq(
+    "com.socrata"              %% "geospace-library"          % "0.4.6",
+    "com.socrata"              %% "socrata-http-client"       % "3.1.1",
+    "com.socrata"              %% "socrata-thirdparty-utils"  % "3.0.0",
+    "com.socrata"              %% "soda-fountain-external"    % "0.5.0",
+    "nl.grons"                 %% "metrics-scala"             % "3.3.0"
   )
 }
