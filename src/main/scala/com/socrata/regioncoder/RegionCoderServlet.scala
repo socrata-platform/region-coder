@@ -1,9 +1,10 @@
 package com.socrata.regioncoder
 
+import com.socrata.geospace.lib.Utils._
 import com.socrata.regioncoder.config.RegionCoderConfig
-import javax.servlet.http.{HttpServletResponse => HttpStatus}
-import org.scalatra.AsyncResult
 import com.socrata.soda.external.SodaFountainClient
+import javax.servlet.http.{HttpServletResponse => HttpStatus}
+import org.scalatra.{Ok, AsyncResult}
 
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder {
@@ -29,7 +30,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
   }
 
   // Request body is a JSON array of points. Each point is an array of length 2.
-  // Example: [[-87.6847,41.8369],[-122.3331,47.6097]]
+  // Example: [[-87.6847,41.8369],[-122.3331,47.6097],...]
   post("/v1/regions/:resourceName/regioncode") {
     val points = parsedBody.extract[Seq[Seq[Double]]]
     if (points.isEmpty) {
@@ -37,7 +38,23 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     }
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = timer.time { geoRegionCode(params("resourceName"), points) }
+      val is = timer.time { regionCodeByPoint(params("resourceName"), points) }
     }
+  }
+
+  // scalastyle:off multiple.string.literals
+  // DEBUGGING ROUTE : Returns a JSON blob with info about all currently cached regions
+  get("/v1/regions") {
+    Map("spatialCache" -> spatialCache.indicesBySizeDesc().map {
+      case (key, size) => Map("resource" -> key, "numCoordinates" -> size) },
+      "stringCache"  -> stringCache.indicesBySizeDesc().map {
+        case (key, size) => Map("resource" -> key, "numRows" -> size) })
+  }
+
+  // DEBUGGING ROUTE : Clears the region cache
+  delete("/v1/regions") {
+    resetRegionState()
+    logMemoryUsage("After clearing region caches")
+    Ok("Done")
   }
 }

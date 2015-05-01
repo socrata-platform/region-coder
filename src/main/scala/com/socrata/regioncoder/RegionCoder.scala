@@ -21,7 +21,8 @@ trait RegionCoder {
   // Given points, encode them with SpatialIndex and return a sequence of IDs, None if no matching region
   // Points are first encoded into partitions, which are rectangular regions of points
   // Partitions help divide regions into manageable chunks that fit in memory
-  protected def geoRegionCode(resourceName: String, points: Seq[Seq[Double]]): Future[Seq[Option[Int]]] = {
+  protected def regionCodeByPoint(resourceName: String,
+                                  points: Seq[Seq[Double]]): Future[Seq[Option[Int]]] = {
     val geoPoints = points.map { case Seq(x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)
     // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
@@ -39,7 +40,9 @@ trait RegionCoder {
     }
   }
 
-  protected def stringCode(resourceName: String, columnName: String, strings: Seq[String]): Future[Seq[Option[Int]]] = {
+  protected def regionCodeByString(resourceName: String,
+                                   columnName: String,
+                                   strings: Seq[String]): Future[Seq[Option[Int]]] = {
     val futureIndex = stringCache.getFromSoda(sodaFountain, RegionCacheKey(resourceName, columnName))
     futureIndex.map { index => strings.map { str => index.get(str.toLowerCase) } }
   }

@@ -7,14 +7,14 @@ import com.socrata.thirdparty.curator.{DiscoveryConfig, CuratorConfig}
 import com.socrata.thirdparty.metrics.MetricsOptions
 
 class RegionCoderConfig(config: Config) {
-  val port = config.getInt("port")
+  val port = config.getInt("region-coder.port")
 
-  val metrics = MetricsOptions(config.getConfig("metrics"))
+  val metrics = MetricsOptions(config.getConfig("region-coder.metrics"))
 
   val shapePayloadTimeout = new FiniteDuration(
-    config.getMilliseconds("shape-payload-timeout"), TimeUnit.MILLISECONDS)
-  val cache = config.getConfig("cache")
-  val partitioning = new RegionPartitionConfig(config.getConfig("partitioning"))
+    config.getMilliseconds("region-coder.shape-payload-timeout"), TimeUnit.MILLISECONDS)
+  val cache = config.getConfig("region-coder.cache")
+  val partitioning = new RegionPartitionConfig(config.getConfig("region-coder.partitioning"))
 
   val discovery = new DiscoveryConfig(config, "service-advertisement")
   val curator = new CuratorConfig(config, "curator")
