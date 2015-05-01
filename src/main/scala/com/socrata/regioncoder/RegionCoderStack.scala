@@ -11,7 +11,8 @@ trait RegionCoderStack extends ScalatraServlet
 
   // Sets up automatic case class to JSON output serialization, required by
   // the JValueResult trait.
-  protected implicit val jsonFormats: Formats = DefaultFormats + new NoneSerializer
+  protected implicit val jsonFormats: Formats =
+    DefaultFormats + new NoneSerializer + new EnvelopeSerializer
 
   // For FutureSupport / async stuff
   protected implicit val executor = concurrent.ExecutionContext.Implicits.global
