@@ -14,7 +14,7 @@ import javax.servlet.ServletContext
 
 class ScalatraBootstrap extends LifeCycle {
   lazy val config = new RegionCoderConfig(
-    ConfigFactory.load().getConfig("com.socrata.region-coder"))
+    ConfigFactory.load().getConfig("com.socrata"))
 
   lazy val curator = CuratorFromConfig.unmanaged(config.curator)
   lazy val discovery = DiscoveryFromConfig.unmanaged(classOf[AuxiliaryData], curator, config.discovery)
