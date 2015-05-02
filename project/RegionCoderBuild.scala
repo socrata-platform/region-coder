@@ -35,18 +35,23 @@ object RegionCoderBuild extends Build {
   lazy val scalatraDeps = Seq(
     "ch.qos.logback"    % "logback-classic"   % "1.1.2" % "runtime",
     "javax.servlet"     % "javax.servlet-api" % "3.1.0",
-    "org.eclipse.jetty" % "jetty-plus"        % "9.1.5.v20140505" % "container",
-    "org.eclipse.jetty" % "jetty-webapp"      % "9.1.5.v20140505" % "container",
+    "org.eclipse.jetty" % "jetty-plus"        % "8.1.8.v20121106" % "container",
+    "org.eclipse.jetty" % "jetty-webapp"      % "8.1.8.v20121106" % "container;compile"
+      exclude("org.eclipse.jetty.orbit", "javax.servlet"),
     "org.json4s"       %% "json4s-jackson"    % "3.2.6",
     "org.scalatra"     %% "scalatra"          % ScalatraVersion,
     "org.scalatra"     %% "scalatra-json"     % ScalatraVersion
   )
 
   lazy val socrataDeps = Seq(
+    "com.codahale.metrics"      % "metrics-graphite"         % "3.0.2"
+      exclude("com.codahale.metrics", "metrics-core"),
     "com.socrata"              %% "geospace-library"         % "0.4.6",
     "com.socrata"              %% "socrata-http-client"      % "3.1.1",
     "com.socrata"              %% "socrata-thirdparty-utils" % "3.0.0",
     "com.socrata"              %% "soda-fountain-external"   % "0.5.0",
+    "io.dropwizard.metrics"     % "metrics-jetty8"           % "3.1.0"
+      exclude("org.eclipse.jetty", "jetty-server"),
     "nl.grons"                 %% "metrics-scala"            % "3.3.0"
   )
 
