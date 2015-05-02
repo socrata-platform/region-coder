@@ -44,7 +44,7 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     mockSodaSchema("triangles")
     mockSodaIntersects("triangles.geojson", "0", "0", geojson)
 
-    post("/v1/regions/triangles/regioncode",
+    post("/v1/regions/triangles/pointcode",
       "[[0.1, 0.5], [0.5, 0.1], [4.99, 4.99]]",
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_OK)
@@ -58,7 +58,7 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     mockSodaIntersects("triangles.geojson", "0", "0", geojson)
     mockSodaIntersects("triangles.geojson", "8", "12", geojson2)
 
-    post("/v1/regions/triangles/regioncode",
+    post("/v1/regions/triangles/pointcode",
       "[[0.1, 0.5], [11.1, 13.9], [0.5, 0.1]]",
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_OK)
@@ -70,7 +70,7 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     forceRegionRecache()
     WireMock.reset()
 
-    post("/v1/regions/triangles/regioncode",
+    post("/v1/regions/triangles/pointcode",
       "[[0.1, 0.5], [0.5, 0.1], [10, 20]]",
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_INTERNAL_SERVER_ERROR)
@@ -81,10 +81,22 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     forceRegionRecache()
     mockSodaRoute("nonsense.geojson", "gobbledygook")
 
-    post("/v1/regions/nonsense/regioncode",
+    post("/v1/regions/nonsense/pointcode",
       "[[0.1, 0.5], [0.5, 0.1], [10, 20]]",
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_INTERNAL_SERVER_ERROR)
+    }
+  }
+
+  test("string coding service") {
+    forceRegionRecache()
+    mockSodaRoute("triangles.geojson", geojson)
+
+    post("/v1/regions/triangles/stringcode?column=name",
+      """["My MiXeD CaSe NaMe 1", "another NAME", "My MiXeD CaSe NaMe 2"]""",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[1,null,2]""")
     }
   }
 }

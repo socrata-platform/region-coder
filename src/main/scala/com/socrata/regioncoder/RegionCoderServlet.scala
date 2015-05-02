@@ -4,7 +4,7 @@ import com.socrata.geospace.lib.Utils._
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
 import javax.servlet.http.{HttpServletResponse => HttpStatus}
-import org.scalatra.{Ok, AsyncResult}
+import org.scalatra.{BadRequest, Ok, AsyncResult}
 
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder {
@@ -31,14 +31,26 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   // Request body is a JSON array of points. Each point is an array of length 2.
   // Example: [[-87.6847,41.8369],[-122.3331,47.6097],...]
-  post("/v1/regions/:resourceName/regioncode") {
+  post("/v1/regions/:resourceName/pointcode") {
     val points = parsedBody.extract[Seq[Seq[Double]]]
     if (points.isEmpty) {
       halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y]...]")
     }
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = timer.time { regionCodeByPoint(params("resourceName"), points) }
+      val is = timer.time { regionCodeByPoint(params("resourceName"), points) } // scalastyle:ignore
+    }
+  }
+
+  post("/v1/regions/:resourceName/stringcode") {
+    val strings = parsedBody.extract[Seq[String]]
+    if (strings.isEmpty) halt(HttpStatus.SC_BAD_REQUEST,
+      s"""Could not parse '${request.body}'.  Must be in the form ["98102","98101",...]""")
+    val column = params.getOrElse("column", halt(BadRequest("Missing param 'column'")))
+
+    new AsyncResult {
+      override val timeout = rcConfig.shapePayloadTimeout
+      val is = timer.time { regionCodeByString(params("resourceName"), column, strings) }
     }
   }
 
