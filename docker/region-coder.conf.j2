@@ -1,0 +1,20 @@
+com.socrata {
+  common-zk-ensemble = {{ ZOOKEEPER_ENSEMBLE }}
+  curator.ensemble = {{ ZOOKEEPER_ENSEMBLE }}
+  service-advertisement.address = "{{ ARK_HOST }}"
+
+  region-coder {
+    cache {
+      enable-depressurize = true
+      min-free-percentage = {{ MIN_FREE_MEM_PCT }}
+      target-free-percentage = {{ TARGET_FREE_MEM_PCT }}
+    }
+
+    metrics {
+      log-metrics = {{ LOG_METRICS }}
+      enable-graphite = {{ ENABLE_GRAPHITE }}
+      graphite-host = "{{ GRAPHITE_HOST }}"
+      graphite-port = "{{ GRAPHITE_PORT }}"
+    }
+  }
+}
