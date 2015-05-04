@@ -15,7 +15,6 @@ object RegionCoderBuild extends Build {
     settings = ScalatraPlugin.scalatraWithJRebel ++ buildInfoSettings ++ Seq(
       organization := "com.socrata",
       name := "region-coder",
-      version := "0.1.0-SNAPSHOT",
       scalaVersion := "2.10.4",
       port in Conf := 2021,
       resolvers += Classpaths.typesafeReleases,
