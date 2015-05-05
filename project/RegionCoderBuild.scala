@@ -18,6 +18,7 @@ object RegionCoderBuild extends Build {
       scalaVersion := "2.10.4",
       port in Conf := 2021,
       resolvers += Classpaths.typesafeReleases,
+      resolvers += "GeoTools" at "http://download.osgeo.org/webdav/geotools/",
       libraryDependencies ++= scalatraDeps ++ socrataDeps ++ testDeps,
       sourceGenerators in Compile <+= buildInfo,
       buildInfoPackage := "com.socrata.regioncoder",
