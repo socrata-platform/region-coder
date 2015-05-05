@@ -13,6 +13,8 @@ object RegionCoderBuild extends Build {
     "region-coder",
     file("."),
     settings = ScalatraPlugin.scalatraWithJRebel ++ buildInfoSettings ++ Seq(
+      // TODO: enable code coverage minimum
+      scoverage.ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false,
       organization := "com.socrata",
       name := "region-coder",
       scalaVersion := "2.10.4",
