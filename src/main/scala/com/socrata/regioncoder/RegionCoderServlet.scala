@@ -1,32 +1,36 @@
 package com.socrata.regioncoder
 
+import javax.servlet.http.{HttpServletResponse => HttpStatus}
+
+import com.rojoma.json.v3.ast.{JObject, JString}
+import com.rojoma.json.v3.util.JsonUtil
 import com.socrata.geospace.lib.Utils._
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
-import javax.servlet.http.{HttpServletResponse => HttpStatus}
-import org.scalatra.{BadRequest, Ok, AsyncResult}
+import org.scalatra.metrics.MetricsSupport
+import org.scalatra.{AsyncResult, BadRequest, Ok}
 
+// scalastyle:off multiple.string.literals
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
-  extends RegionCoderStack with RegionCoder {
+  extends RegionCoderStack with RegionCoder with MetricsSupport {
 
   val cacheConfig = rcConfig.cache
   val partitionXsize = rcConfig.partitioning.sizeX
   val partitionYsize = rcConfig.partitioning.sizeY
 
+  def pointcodeTimer[A](f: => A): A = timer("pointcode") {f}.call()
+  def stringcodeTimer[A](f: => A): A = timer("stringcode") {f}.call()
+  def debugGetTimer[A](f: => A): A = timer("debug-get") {f}.call()
+  def debugClearTimer[A](f: => A): A = timer("debug-clear") {f}.call()
+
   get("/") {
-    <html>
-      <body>
-        <h1>Hello, world!</h1>
-        Say <a href="hello-scalate">hello to Scalate</a>.
-      </body>
-    </html>
+    """{
+      |"hello": "region-coder"
+    }""".stripMargin
   }
 
   get("/version") {
-    Map("version" -> BuildInfo.version,
-      "scalaVersion" -> BuildInfo.scalaVersion,
-      "dependencies" -> BuildInfo.libraryDependencies,
-      "buildTime" -> new org.joda.time.DateTime(BuildInfo.buildTime).toString())
+    JsonUtil.renderJson(JObject(BuildInfo.toMap.mapValues(v => JString(v.toString))))
   }
 
   // Request body is a JSON array of points. Each point is an array of length 2.
@@ -38,7 +42,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     }
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = timer.time { regionCodeByPoint(params("resourceName"), points) } // scalastyle:ignore
+      val is = pointcodeTimer { regionCodeByPoint(params("resourceName"), points) }
     }
   }
 
@@ -50,23 +54,26 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = timer.time { regionCodeByString(params("resourceName"), column, strings) }
+      val is = stringcodeTimer { regionCodeByString(params("resourceName"), column, strings) }
     }
   }
 
-  // scalastyle:off multiple.string.literals
   // DEBUGGING ROUTE : Returns a JSON blob with info about all currently cached regions
   get("/v1/regions") {
-    Map("spatialCache" -> spatialCache.indicesBySizeDesc().map {
-      case (key, size) => Map("resource" -> key, "numCoordinates" -> size) },
-      "stringCache"  -> stringCache.indicesBySizeDesc().map {
-        case (key, size) => Map("resource" -> key, "numRows" -> size) })
+    debugGetTimer {
+      Map("spatialCache" -> spatialCache.indicesBySizeDesc().map {
+        case (key, size) => Map("resource" -> key, "numCoordinates" -> size) },
+        "stringCache" -> stringCache.indicesBySizeDesc().map {
+          case (key, size) => Map("resource" -> key, "numRows" -> size) })
+    }
   }
 
   // DEBUGGING ROUTE : Clears the region cache
   delete("/v1/regions") {
-    resetRegionState()
-    logMemoryUsage("After clearing region caches")
-    Ok("Done")
+    debugClearTimer {
+      resetRegionState()
+      logMemoryUsage("After clearing region caches")
+      Ok("Done")
+    }
   }
 }
