@@ -1,9 +1,11 @@
 # Region Coder Docker Config #
-To build the image, run:
+To build the image, first copy (don't symlink) the assembly jar to the docker/ subdir as `region-coder-assembly.jar`, then run:
     `docker build -t region-coder .`
 
 Or, if you want to replace old versions:
     `docker build --rm -t region-coder .`
+
+If you are running docker from a VM or boot2docker, it helps to not work in a shared folder (copy the files to a clean local dir first).
 
 ## Required Environment Variables ##
 

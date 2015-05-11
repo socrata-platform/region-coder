@@ -4,6 +4,10 @@ FROM socrata/java
 ENV SERVER_NAME region-coder
 ENV SERVICE_PORT 2021
 EXPOSE 2021
+ENV JMX_PORT 9999
+ENV JMX_RMI_PORT 9998
+EXPOSE 9999
+EXPOSE 9998
 
 # Some paths/locations we care about
 ENV SERVER_ROOT      /srv/${SERVER_NAME}/
