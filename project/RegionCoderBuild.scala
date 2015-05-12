@@ -8,7 +8,7 @@ object RegionCoderBuild extends Build {
   private val port = SettingKey[Int]("port")
   private val Conf = config("container")
   private val ScalatraVersion = "2.4.0.RC1"
-  private val JettyVersion = "8.1.8.v20121106"
+  private val JettyVersion = "9.2.10.v20150310"
 
   lazy val project = Project (
     "region-coder",
