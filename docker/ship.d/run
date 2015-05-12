@@ -15,8 +15,8 @@ exec su socrata -c "exec /usr/bin/java \
     -Djava.net.preferIPv4Stack=true \
     -Dcom.sun.management.jmxremote \
     -Dcom.sun.management.jmxremote.port=${JMX_PORT} \
-    -Dcom.sun.management.jmxremote.rmi.port=${JMX_RMI_PORT} \
+    -Dcom.sun.management.jmxremote.rmi.port=${JMX_PORT} \
     -Dcom.sun.management.jmxremote.ssl=false \
     -Dcom.sun.management.jmxremote.authenticate=false \
-    -Djava.rmi.server.hostname=${ARK_HOST:-0.0.0.0} \
+    -Djava.rmi.server.hostname=${ARK_HOST:-localhost} \
     -jar $SERVER_JAR"
