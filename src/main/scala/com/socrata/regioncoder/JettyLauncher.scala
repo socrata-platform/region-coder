@@ -3,7 +3,6 @@ package com.socrata.regioncoder
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.typesafe.config.ConfigFactory
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.handler.StatisticsHandler
 import org.eclipse.jetty.servlet.DefaultServlet
 import org.eclipse.jetty.webapp.WebAppContext
 import org.scalatra.servlet.ScalatraListener
@@ -21,8 +20,8 @@ object JettyLauncher extends App {
   context.addEventListener(new ScalatraListener)
   context.addServlet(classOf[DefaultServlet], rootPath)
 
-  server.setHandler(new StatisticsHandler)
-  server.setStopTimeout(config.gracefulShutdownMs)
+  server.setHandler(context)
+  server.setGracefulShutdown(config.gracefulShutdownMs)
   server.setStopAtShutdown(true)
   server.start()
   server.join()
