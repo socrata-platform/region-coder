@@ -29,7 +29,9 @@ object RegionCoderBuild extends Build {
         version,
         scalaVersion,
         sbtVersion,
-        BuildInfoKey.action("buildTime") { System.currentTimeMillis },
+        BuildInfoKey.action("buildTime") {
+          new org.joda.time.DateTime(System.currentTimeMillis).toString()
+        },
         BuildInfoKey.action("revision") { gitSha }),
       buildInfoOptions += BuildInfoOption.ToMap
     )
