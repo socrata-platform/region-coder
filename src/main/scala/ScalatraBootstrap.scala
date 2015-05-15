@@ -8,7 +8,7 @@ import com.socrata.regioncoder._
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
 import com.socrata.thirdparty.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
-import com.socrata.thirdparty.curator.{CuratorFromConfig, DiscoveryFromConfig}
+import com.socrata.thirdparty.curator.{CuratorBroker, CuratorFromConfig, DiscoveryFromConfig}
 import com.typesafe.config.ConfigFactory
 import org.scalatra._
 import org.scalatra.metrics.MetricsSupport
@@ -19,6 +19,9 @@ class ScalatraBootstrap extends LifeCycle with MetricsSupport {
 
   lazy val curator = CuratorFromConfig.unmanaged(config.curator)
   lazy val discovery = DiscoveryFromConfig.unmanaged(classOf[AuxiliaryData], curator, config.discovery)
+  lazy val broker = new CuratorBroker(discovery, config.discovery.address, config.discovery.name, None)
+  lazy val cookie = broker.register(config.port)
+
   lazy val httpClient = new HttpClientHttpClient(
     Executors.newCachedThreadPool(),
     HttpClientHttpClient.defaultOptions.
@@ -36,6 +39,7 @@ class ScalatraBootstrap extends LifeCycle with MetricsSupport {
   override def init(context: ServletContext): Unit = {
     curator.start()
     discovery.start()
+    cookie
     sodaFountain.start()
     context.mountMetricsAdminServlet("/metrics-admin")
     context.mountHealthCheckServlet("/health")
@@ -47,6 +51,7 @@ class ScalatraBootstrap extends LifeCycle with MetricsSupport {
 
   override def destroy(context: ServletContext): Unit = {
     sodaFountain.close()
+    broker.deregister(cookie)
     httpClient.close()
     discovery.close()
     curator.close()
