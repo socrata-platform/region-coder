@@ -21,12 +21,8 @@ object JettyLauncher extends App {
   context.addEventListener(new ScalatraListener)
   context.addServlet(classOf[DefaultServlet], rootPath)
 
-  val handlers = new HandlerList
-  handlers.addHandler(new StatisticsHandler)
-  handlers.addHandler(context)
-
-  server.setHandler(handlers)
-  server.setStopTimeout(config.gracefulShutdownMs)
+  server.setHandler(context)
+  server.setGracefulShutdown(config.gracefulShutdownMs)
   server.setStopAtShutdown(true)
   server.start()
   server.join()
