@@ -22,6 +22,9 @@ Maps each point in an array of points to a region ID in the specified region dat
 curl -X POST -H "Content-Type: application/json" http://localhost:2021/v1/regions/{SHAPEFILE_RESOURCE_NAME}/pointcode -d '[[-87.632322, 41.883846],[-87.775757,41.932142],[0,0]]'
 ```
 Example of an expected response:
+* `34` and `52` are the IDs of the matching regions.
+* `null` indicates that the point did not match any region in the specified dataset.
+* The IDs are returned in the same order as the points were provided in the request.
 ```
 [34,52,null]
 ```
