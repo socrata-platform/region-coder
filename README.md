@@ -38,6 +38,7 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:2021/v1/regions/_chic-ago1/pointcode \
   -d '[[-87.632322, 41.883846],[-87.775757,41.932142],[0,0]]'
 ```
+
 Example response:
 ```json
 [34,52,null]
@@ -66,8 +67,9 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:2021/v1/regions/_chic-ago1/stringcode?column=zipcode \
   -d '["60661","60707","39211","giraffe"]'
 ```
+
 Example response:
-```
+```json
 [38,51,null,null]
 ```
 
