@@ -27,7 +27,7 @@ Path parameters:
 * `<SHAPEFILE_RESOURCE_NAME>`: NBE resource name of a region dataset. The resource name is the same as the dataset 4x4 with a leading underscore (e.g. `_abcd-1234`).
 
 POST data:
-* An array of points, each of which is an array of `[latitude, longitude]`.
+* An array of points, each of which is an array of `[longitude, latitude]`.
 
 Example request:
 ```bash
