@@ -29,6 +29,7 @@ Notes:
 * `34` and `52` are the IDs of the matching regions.
 * `null` indicates that the point did not match any region in the specified dataset.
 * The IDs are returned in the same order as the points were provided in the request.
+
 #### Region code on string endpoint
 Maps each string in an array of strings to a region ID in the specified region dataset, matching the provided string on the specified column in the region dataset.
 * Replace {SHAPEFILE_RESOURCE_NAME} below with the NBE resource name of a region dataset on your local machine. For example, if the 4x4 of the region dataset is abcd-1234, the NBE resource name is _abcd-1234.
