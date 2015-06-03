@@ -20,6 +20,10 @@ Example of an expected response:
 ```
 curl -X POST -H "Content-Type: application/json" http://localhost:2021/v1/regions/{SHAPEFILE_RESOURCE_NAME}/pointcode -d '[[-87.632322, 41.883846],[-87.775757,41.932142]]'
 ```
+Example of an expected response:
+```
+[34,52]
+```
 
 ## Troubleshooting
 * Is your new backend stack running? (soda-fountain, data-coordinator, query-coordinator, secondary-watcher, soql-postgres-adapter)
