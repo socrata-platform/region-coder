@@ -22,6 +22,7 @@ object RegionCoderBuild extends Build {
       port in Conf := 2021,
       resolvers += Classpaths.typesafeReleases,
       resolvers += "GeoTools" at "http://download.osgeo.org/webdav/geotools/",
+      resolvers += "velvia maven" at "http://dl.bintray.com/velvia/maven",
       libraryDependencies ++= scalatraDeps ++ socrataDeps ++ testDeps,
       buildInfoPackage := "com.socrata.regioncoder",
       buildInfoKeys := Seq[BuildInfoKey](
