@@ -3,7 +3,7 @@ package com.socrata.regioncoder
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json.JacksonJsonSupport
-import org.slf4j.LoggerFactory
+import org.slf4j.{MDC, LoggerFactory}
 
 trait RegionCoderStack extends ScalatraServlet
   with JacksonJsonSupport with FutureSupport with ScalatraLogging {
@@ -32,6 +32,10 @@ trait RegionCoderStack extends ScalatraServlet
 trait ScalatraLogging extends ScalatraServlet {
   val logger = LoggerFactory.getLogger(getClass)
   before() {
+    // TODO : Generate a request ID if one wasn't passed in
+    request.header("X-Socrata-RequestId").foreach(
+      MDC.put("X-Socrata-RequestId", _))
+
     logger.info(request.getMethod + " - " + request.getRequestURI + " ? " + request.getQueryString)
   }
 
