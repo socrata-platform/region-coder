@@ -33,7 +33,7 @@ trait ScalatraLogging extends ScalatraServlet {
   val logger = LoggerFactory.getLogger(getClass)
   before() {
     // TODO : Generate a request ID if one wasn't passed in
-    request.header("X-Socrata-RequestId").foreach(
+    request.header("X-Socrata-RequestId").foreach( // scalastyle:off multiple.string.literals
       MDC.put("X-Socrata-RequestId", _))
 
     logger.info(request.getMethod + " - " + request.getRequestURI + " ? " + request.getQueryString)
