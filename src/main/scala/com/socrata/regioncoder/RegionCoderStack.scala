@@ -14,7 +14,8 @@ trait RegionCoderStack extends ScalatraServlet
     DefaultFormats + new NoneSerializer + new EnvelopeSerializer
 
   // For FutureSupport / async stuff
-  protected implicit val executor = concurrent.ExecutionContext.Implicits.global
+  protected implicit val executor = MDCHttpExecutionContext.fromThread(
+    concurrent.ExecutionContext.Implicits.global)
 
   // Before every action runs, set the content type to be in JSON format.
   before() {
