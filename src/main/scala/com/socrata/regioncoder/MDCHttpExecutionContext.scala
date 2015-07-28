@@ -40,3 +40,4 @@ class MDCHttpExecutionContext(mdcContext: java.util.Map[String, String], delegat
 
   def reportFailure(t: Throwable): Unit = delegate.reportFailure(t)
 }
+
