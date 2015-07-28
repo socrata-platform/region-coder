@@ -19,11 +19,12 @@ object MDCHttpExecutionContext {
 class MDCHttpExecutionContext(mdcContext: java.util.Map[String, String], delegate: ExecutionContext)
   extends ExecutionContextExecutor {
 
-  def execute(runnable: Runnable): Unit =
+  def execute(runnable: Runnable): Unit = {
+    val callingThreadContext = MDC.getCopyOfContextMap
     delegate.execute(new Runnable {
       def run(): Unit = {
         val originalThreadContext = MDC.getCopyOfContextMap
-        setContextMap(mdcContext)
+        setContextMap(callingThreadContext)
         try {
           runnable.run()
         } finally {
@@ -31,6 +32,7 @@ class MDCHttpExecutionContext(mdcContext: java.util.Map[String, String], delegat
         }
       }
     })
+  }
 
   private[this] def setContextMap(context: java.util.Map[String, String]): Unit =
     Option(context) match {
