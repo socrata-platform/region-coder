@@ -58,12 +58,14 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     }
   }
 
-  // DEBUGGING ROUTE : Returns a JSON blob with info about all currently cached regions
+  // DEBUGGING ROUTE : Returns a JSON blob with info about all currently cached regions, ordered by least-recently-used
   get("/v1/regions") {
     debugGetTimer {
-      Map("spatialCache" -> spatialCache.indicesBySizeDesc().map {
-        case (key, size) => Map("resource" -> key, "numCoordinates" -> size) },
-        "stringCache" -> stringCache.indicesBySizeDesc().map {
+      Map(
+        "spatialCache" -> spatialCache.entriesByLeastRecentlyUsed().map {
+          case (key, size) => Map("resource" -> key, "numCoordinates" -> size) },
+
+        "stringCache" -> stringCache.entriesByLeastRecentlyUsed().map {
           case (key, size) => Map("resource" -> key, "numRows" -> size) })
     }
   }
