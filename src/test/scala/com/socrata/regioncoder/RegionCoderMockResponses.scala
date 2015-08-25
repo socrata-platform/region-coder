@@ -50,7 +50,7 @@ trait RegionCoderMockResponses extends FakeSodaFountain {
                 |    "type": "Polygon",
                 |    "coordinates": [[[0.0, 0.0], [0.0, 1.0], [1.0, 1.0], [0.0, 0.0]]]
                 |  },
-                |  "properties": { "_feature_id": "1", "name": "My Mixed Case Name 1" }
+                |  "properties": { "_feature_id": "1", "user_defined_key": "101", "name": "My Mixed Case Name 1" }
                 |}""".stripMargin
   val feat2 = """{
                 |  "type": "Feature",
@@ -58,7 +58,7 @@ trait RegionCoderMockResponses extends FakeSodaFountain {
                 |    "type": "Polygon",
                 |    "coordinates": [[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 0.0]]]
                 |  },
-                |  "properties": { "_feature_id": "2", "name": "My Mixed Case Name 2" }
+                |  "properties": { "_feature_id": "2", "user_defined_key": "102", "name": "My Mixed Case Name 2" }
                 |}""".stripMargin
   val feat3 = """{
                 |  "type": "Feature",
@@ -66,7 +66,7 @@ trait RegionCoderMockResponses extends FakeSodaFountain {
                 |    "type": "Polygon",
                 |    "coordinates": [[[10.0, 10.0], [10.0, 15.0], [15.0, 15.0], [10.0, 10.0]]]
                 |  },
-                |  "properties": { "_feature_id": "4", "name": "My Mixed Case Name 2" }
+                |  "properties": { "_feature_id": "4", "user_defined_key": "104", "name": "My Mixed Case Name 2" }
                 |}""".stripMargin
   val geojson = """{"type":"FeatureCollection",
                   |"crs" : { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
