@@ -79,6 +79,20 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     }
   }
 
+  test("v2 - points in multiple partitions region code properly with cache loaded from soda fountain") {
+    forceRegionRecache()
+    mockSodaSchema("triangles")
+    mockSodaIntersects("triangles.geojson", "0", "0", geojson)
+    mockSodaIntersects("triangles.geojson", "8", "12", geojson2)
+
+    post("/v2/regions/triangles/pointcode?columnToReturn=user_defined_key",
+      "[[0.1, 0.5], [11.1, 13.9], [0.5, 0.1]]",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[101,104,102]""")
+    }
+  }
+
   test("v1 - string coding service") {
     forceRegionRecache()
     mockSodaRoute("triangles.geojson", geojson)
