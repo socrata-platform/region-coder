@@ -39,7 +39,7 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
   }
 
   // Pretty much an end to end functional test, from Servlet route to SF client and region cache
-  test("points region code properly with cache loaded from soda fountain mock") {
+  test("v1 - points region code properly with cache loaded from soda fountain mock") {
     forceRegionRecache()
     mockSodaSchema("triangles")
     mockSodaIntersects("triangles.geojson", "0", "0", geojson)
@@ -52,7 +52,7 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
     }
   }
 
-  test("points in multiple partitions region code properly with cache loaded from soda fountain") {
+  test("v1 - points in multiple partitions region code properly with cache loaded from soda fountain") {
     forceRegionRecache()
     mockSodaSchema("triangles")
     mockSodaIntersects("triangles.geojson", "0", "0", geojson)
@@ -63,6 +63,57 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_OK)
       body should equal ("""[1,4,2]""")
+    }
+  }
+
+  test("v2 - points region code properly with cache loaded from soda fountain mock") {
+    forceRegionRecache()
+    mockSodaSchema("triangles")
+    mockSodaIntersects("triangles.geojson", "0", "0", geojson)
+
+    post("/v2/regions/triangles/pointcode?columnToReturn=user_defined_key",
+      "[[0.1, 0.5], [0.5, 0.1], [4.99, 4.99]]",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[101,102,null]""")
+    }
+  }
+
+  test("v2 - points in multiple partitions region code properly with cache loaded from soda fountain") {
+    forceRegionRecache()
+    mockSodaSchema("triangles")
+    mockSodaIntersects("triangles.geojson", "0", "0", geojson)
+    mockSodaIntersects("triangles.geojson", "8", "12", geojson2)
+
+    post("/v2/regions/triangles/pointcode?columnToReturn=user_defined_key",
+      "[[0.1, 0.5], [11.1, 13.9], [0.5, 0.1]]",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[101,104,102]""")
+    }
+  }
+
+  test("v1 - string coding service") {
+    forceRegionRecache()
+    mockSodaRoute("triangles.geojson", geojson)
+
+    post("/v1/regions/triangles/stringcode?column=name",
+      """["My MiXeD CaSe NaMe 1", "another NAME", "My MiXeD CaSe NaMe 2"]""",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[1,null,2]""")
+    }
+  }
+
+  test("v2 - string coding service") {
+    forceRegionRecache()
+    mockSodaRoute("triangles.geojson", geojson)
+
+    post("/v2/regions/triangles/stringcode?columnToMatch=name&columnToReturn=user_defined_key",
+      """["My MiXeD CaSe NaMe 1", "another NAME", "My MiXeD CaSe NaMe 2"]""",
+      headers = Map("Content-Type" -> "application/json")) {
+      status should equal (HttpStatus.SC_OK)
+      body should equal ("""[101,null,102]""")
     }
   }
 
@@ -85,18 +136,6 @@ class RegionCoderServletSpec extends ScalatraSuite with FunSuiteLike with Region
       "[[0.1, 0.5], [0.5, 0.1], [10, 20]]",
       headers = Map("Content-Type" -> "application/json")) {
       status should equal (HttpStatus.SC_INTERNAL_SERVER_ERROR)
-    }
-  }
-
-  test("string coding service") {
-    forceRegionRecache()
-    mockSodaRoute("triangles.geojson", geojson)
-
-    post("/v1/regions/triangles/stringcode?column=name",
-      """["My MiXeD CaSe NaMe 1", "another NAME", "My MiXeD CaSe NaMe 2"]""",
-      headers = Map("Content-Type" -> "application/json")) {
-      status should equal (HttpStatus.SC_OK)
-      body should equal ("""[1,null,2]""")
     }
   }
 }
