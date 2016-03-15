@@ -53,7 +53,7 @@ object RegionCoderBuild extends Build {
   )
 
   lazy val socrataDeps = Seq(
-    "com.socrata"              %% "geospace-library"         % "1.0.0"
+    "com.socrata"              %% "geospace-library"         % "1.0.1"
       exclude("commons-io", "commons-io"),
     "com.socrata"              %% "socrata-http-client"      % "3.1.1",
     "com.socrata"              %% "socrata-thirdparty-utils" % "3.0.0",
