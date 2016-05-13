@@ -1,4 +1,4 @@
-FROM socrata/java
+FROM socrata/java8
 
 # Service specific settings.
 ENV SERVER_NAME region-coder
