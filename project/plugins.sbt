@@ -3,7 +3,7 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.7"
 )
 
-resolvers += "socrata maven" at "https://repository-socrata-oss.forge.cloudbees.com/release"
+resolvers += "socrata maven" at "https://repo.socrata.com/artifactory/libs-release"
 
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt"    % "0.4.0")
 addSbtPlugin("com.earldouglas"  % "xsbt-web-plugin" % "1.1.0")
