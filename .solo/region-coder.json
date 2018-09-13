@@ -1,0 +1,5 @@
+{
+  "start_process": "bin/start_region_coder.sh",
+  "ports": [ 2021 ],
+  "http_check": "/version"
+}

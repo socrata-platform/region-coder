@@ -3,6 +3,6 @@
 BASEDIR=$(dirname $0)/..
 JARFILE=$BASEDIR/target/scala-2.10/region-coder-assembly-*.jar
 if [ ! -e $JARFILE ]; then
-  cd $BASEDIR && sbt assembly
+  cd $BASEDIR && sbt clean assembly
 fi
-java -jar $JARFILE &
+java -jar $JARFILE
