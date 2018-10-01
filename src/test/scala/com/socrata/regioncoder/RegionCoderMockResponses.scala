@@ -34,12 +34,12 @@ trait RegionCoderMockResponses extends FakeSodaFountain {
 
   protected def forceRegionRecache(): Unit = {
     // Reset the cache to force region to load from soda fountain
-    delete("/v1/regions") {
+    delete("/v2/regions") {
       status should equal (HttpStatus.SC_OK)
     }
 
     // Verify the cache is empty
-    get("/v1/regions") {
+    get("/v2/regions") {
       body should equal ("""{"spatialCache":[],"stringCache":[]}""")
     }
   }
