@@ -14,8 +14,6 @@ import org.scalatra.{AsyncResult, BadRequest, Ok}
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder with MetricsSupport {
 
-  val defaultColumnToReturn = "_feature_id"
-
   val cacheConfig = rcConfig.cache
   val partitionXsize = rcConfig.partitioning.sizeX
   val partitionYsize = rcConfig.partitioning.sizeY
@@ -33,33 +31,6 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   get("/version") {
     JsonUtil.renderJson(JObject(BuildInfo.toMap.mapValues(v => JString(v.toString))))
-  }
-
-  // TODO : Remove once Soda Fountain and monitoring has been updated to use v2 endpoint
-  // Request body is a JSON array of points. Each point is an array of length 2.
-  // Example: [[-87.6847,41.8369],[-122.3331,47.6097],...]
-  post("/v1/regions/:resourceName/pointcode") {
-    val points = parsedBody.extract[Seq[Seq[Double]]]
-    if (points.isEmpty) {
-      halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
-    }
-    new AsyncResult {
-      override val timeout = rcConfig.shapePayloadTimeout
-      val is = pointcodeTimer { regionCodeByPoint(params("resourceName"), defaultColumnToReturn, points) }
-    }
-  }
-
-  // TODO : Remove once Soda Fountain and monitoring has been updated to use v2 endpoint
-  post("/v1/regions/:resourceName/stringcode") {
-    val strings = parsedBody.extract[Seq[String]]
-    if (strings.isEmpty) halt(HttpStatus.SC_BAD_REQUEST,
-      s"""Could not parse '${request.body}'.  Must be in the form ["98102","98101",...]""")
-    val column = params.getOrElse("column", halt(BadRequest("Missing param 'column'")))
-
-    new AsyncResult {
-      override val timeout = rcConfig.shapePayloadTimeout
-      val is = stringcodeTimer { regionCodeByString(params("resourceName"), column, defaultColumnToReturn, strings) }
-    }
   }
 
   // Request body is a JSON array of points. Each point is an array of length 2.
