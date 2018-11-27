@@ -1,19 +1,19 @@
 import org.scalatra.sbt._
 import sbt.Keys._
 import sbt._
-import sbtbuildinfo.BuildInfoKeys._
-import sbtbuildinfo.{BuildInfoKey, BuildInfoOption, BuildInfoPlugin}
+import sbtbuildinfo.{BuildInfoKey, BuildInfoOption}
+import sbtbuildinfo.BuildInfoKeys.{buildInfoKeys, buildInfoOptions, buildInfoPackage}
 
-object RegionCoderBuild extends Build {
+
+object RegionCoder {
   private val port = SettingKey[Int]("port")
   private val Conf = config("container")
   private val ScalatraVersion = "2.4.0.RC1"
   private val JettyVersion = "8.1.8.v20121106"
 
-  lazy val project = Project (
-    "region-coder",
-    file("."),
-    settings = ScalatraPlugin.scalatraWithJRebel ++ Seq(
+  lazy val settings: Seq[Setting[_]] = Defaults.itSettings ++ ScalatraPlugin.scalatraWithJRebel ++
+    Seq(
+      name := "region-coder",
       // TODO: enable code coverage minimum
       scoverage.ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false,
       organization := "com.socrata",
@@ -36,7 +36,6 @@ object RegionCoderBuild extends Build {
         BuildInfoKey.action("revision") { gitSha }),
       buildInfoOptions += BuildInfoOption.ToMap
     )
-  ).enablePlugins(BuildInfoPlugin)
 
   lazy val gitSha = Process(Seq("git", "describe", "--always", "--dirty", "--long", "--abbrev=10")).!!.stripLineEnd
 
