@@ -55,8 +55,12 @@ abstract class RegionCache[T](maxEntries: Int = 100) //scalastyle:ignore
   // the metric already exists before trying to registering it again.
   // Because of this, unit tests fail unless we check for existence and skip the gauge.
   metrics.registry.synchronized {
-    if (!metrics.registry.getNames.contains(GaugeNumEntries)) {
-      metrics.gauge(GaugeNumEntries) { cache.size }
+    if (!metrics.registry.getNames.contains(s"${getClass.getCanonicalName}.$GaugeNumEntries")) {
+      if (!metrics.registry.getNames.contains(GaugeNumEntries)) {
+        metrics.gauge(GaugeNumEntries) {
+          cache.size
+        }
+      }
     }
   }
 
