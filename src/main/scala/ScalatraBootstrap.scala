@@ -7,8 +7,8 @@ import com.socrata.http.common.AuxiliaryData
 import com.socrata.regioncoder._
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
-import com.socrata.thirdparty.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
-import com.socrata.thirdparty.curator.{CuratorBroker, CuratorFromConfig, DiscoveryFromConfig}
+import com.socrata.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
+import com.socrata.curator.{CuratorBroker, CuratorFromConfig, DiscoveryFromConfig}
 import com.typesafe.config.ConfigFactory
 import org.scalatra._
 import org.scalatra.metrics.MetricsSupport

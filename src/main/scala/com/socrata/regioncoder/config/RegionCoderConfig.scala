@@ -3,7 +3,7 @@ package com.socrata.regioncoder.config
 import com.typesafe.config.Config
 import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
-import com.socrata.thirdparty.curator.{DiscoveryConfig, CuratorConfig}
+import com.socrata.curator.{DiscoveryConfig, CuratorConfig}
 import com.socrata.thirdparty.metrics.MetricsOptions
 
 class RegionCoderConfig(config: Config) {

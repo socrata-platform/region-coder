@@ -23,6 +23,7 @@ object RegionCoderBuild extends Build {
       resolvers += Classpaths.typesafeReleases,
       resolvers += "GeoTools" at "http://download.osgeo.org/webdav/geotools/",
       resolvers += "velvia maven" at "http://dl.bintray.com/velvia/maven",
+      resolvers += "socrata artifactory" at "https://repo.socrata.com/artifactory/libs-release",
       libraryDependencies ++= scalatraDeps ++ socrataDeps ++ testDeps,
       buildInfoPackage := "com.socrata.regioncoder",
       buildInfoKeys := Seq[BuildInfoKey](
@@ -53,10 +54,11 @@ object RegionCoderBuild extends Build {
   )
 
   lazy val socrataDeps = Seq(
-    "com.socrata"              %% "socrata-http-client"      % "3.1.1",
-    "com.socrata"              %% "socrata-thirdparty-utils" % "3.0.0",
-    "com.socrata"              %% "soda-fountain-external"   % "0.5.0",
-    "com.socrata"              %% "soql-types"               % "0.3.3"
+    "com.socrata"              %% "socrata-http-client"      % "3.11.4",
+    "com.socrata"              %% "socrata-thirdparty-utils" % "4.0.15",
+    "com.socrata"              %% "socrata-curator-utils" % "1.1.2",
+    "com.socrata"              %% "soda-fountain-external"   % "2.1.51",
+    "com.socrata"              %% "soql-types"               % "2.11.4"
       exclude("org.jdom", "jdom")
       exclude("javax.media", "jai_core"),
     "com.typesafe"              % "config"                    % "1.0.2",
@@ -78,7 +80,7 @@ object RegionCoderBuild extends Build {
 
   lazy val testDeps = Seq(
     "com.github.tomakehurst"    % "wiremock"                      % "1.46"  % "test",
-    "com.socrata"              %% "socrata-thirdparty-test-utils" % "3.0.0" % "test",
+    "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
     "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test",
     "org.scalatra"             %% "scalatra-scalatest"            % ScalatraVersion % "test"
   )
