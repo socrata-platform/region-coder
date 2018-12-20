@@ -117,7 +117,7 @@ class SpatialRegionCache(config: Config) extends MemoryManagingRegionCache[Spati
     geomColumnCache(resourceName) {
       logger.info(s"Populating geometry column name for resource $resourceName from soda fountain..")
       val tryColumn =
-        SodaResponse.check(sodaFountain.schema(resourceName), Status_OK).map { jSchema =>
+        SodaResponse.check(sodaFountain.schema(resourceName), StatusOK).map { jSchema =>
           val geoColumns = jSchema.dyn.columns.!.asInstanceOf[JObject].collect {
             case (k, v) if isAcceptedGeometry(v.dyn.datatype.!) => k}.toSeq
 

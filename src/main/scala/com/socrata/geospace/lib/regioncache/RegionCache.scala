@@ -41,7 +41,7 @@ abstract class RegionCache[T](maxEntries: Int = 100) //scalastyle:ignore
   extends Logging with Metrics {
 
   // To be the same value as HttpStatus.SC_OK
-  val Status_OK = 200
+  val StatusOK = 200
 
   private val GaugeNumEntries = "num-entries"
 
@@ -152,7 +152,7 @@ abstract class RegionCache[T](maxEntries: Int = 100) //scalastyle:ignore
         }
         // Originally using javax lib for this one status code, I doubt highly it will ever change, and
         // we will avoid having to make an import for single item by statically adding it.
-        val payload = SodaResponse.check(sodaResponse, Status_OK)
+        val payload = SodaResponse.check(sodaResponse, StatusOK)
         regionIndexLoadTimer.time {
           payload.toOption.
             flatMap {  jvalue => GeoJson.codec.decode(jvalue).right.toOption }.
