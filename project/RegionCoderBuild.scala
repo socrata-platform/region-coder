@@ -81,6 +81,7 @@ object RegionCoderBuild extends Build {
   lazy val testDeps = Seq(
     "com.github.tomakehurst"    % "wiremock"                      % "1.46"  % "test",
     "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
+    "com.socrata"              %% "socrata-curator-test-utils"    % "1.1.2" % "test",
     "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test",
     "org.scalatra"             %% "scalatra-scalatest"            % ScalatraVersion % "test"
   )
