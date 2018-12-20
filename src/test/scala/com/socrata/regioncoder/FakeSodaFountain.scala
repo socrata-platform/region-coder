@@ -8,8 +8,8 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import com.socrata.geospace.lib.errors.ServiceDiscoveryException
 import com.socrata.http.client.{NoopLivenessChecker, HttpClientHttpClient}
 import com.socrata.soda.external.SodaFountainClient
-import com.socrata.thirdparty.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
-import com.socrata.thirdparty.curator.{CuratorServiceIntegration, CuratorBroker}
+import com.socrata.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
+import com.socrata.curator.{CuratorServiceIntegration, CuratorBroker}
 import org.scalatest.{BeforeAndAfterEach, FunSuiteLike}
 import org.scalatra.test.scalatest.ScalatraSuite
 
