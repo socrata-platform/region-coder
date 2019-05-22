@@ -18,12 +18,11 @@ object RegionCoderBuild extends Build {
       scoverage.ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := false,
       organization := "com.socrata",
       name := "region-coder",
-      scalaVersion := "2.10.5",
+      scalaVersion := "2.10.7",
       port in Conf := 2021,
-      resolvers += Classpaths.typesafeReleases,
-      resolvers += "GeoTools" at "http://download.osgeo.org/webdav/geotools/",
-      resolvers += "velvia maven" at "http://dl.bintray.com/velvia/maven",
-      resolvers += "socrata artifactory" at "https://repo.socrata.com/artifactory/libs-release",
+      externalResolvers := Seq(
+      "Socrata Artifactory Libs Release" at "https://repo.socrata.com/artifactory/libs-release/",
+      "Socrata Geotools" at "https://repo.socrata.com/artifactory/socrata-sbt-repo/"),
       libraryDependencies ++= scalatraDeps ++ socrataDeps ++ testDeps,
       buildInfoPackage := "com.socrata.regioncoder",
       buildInfoKeys := Seq[BuildInfoKey](

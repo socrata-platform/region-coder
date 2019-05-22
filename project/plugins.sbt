@@ -3,9 +3,9 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.7"
 )
 
-resolvers ++= Seq(
-  "socrata releases" at "https://repo.socrata.com/artifactory/libs-release/",
-  Resolver.url("socrata ivy releases", url("https://repo.socrata.com/artifactory/ivy-libs-release-local"))(Resolver.ivyStylePatterns)
+externalResolvers ++= Seq(
+  "Socrata Artifactory Lib Releases" at "https://repo.socrata.com/artifactory/libs-release/",
+  Resolver.url("Socrata Ivy Lib Releases", url("https://repo.socrata.com/artifactory/ivy-libs-release"))(Resolver.ivyStylePatterns)
 )
 
 addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt"    % "0.4.0")
