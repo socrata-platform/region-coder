@@ -3,7 +3,7 @@ libraryDependencies ++= Seq(
   "org.joda" % "joda-convert" % "1.7"
 )
 
-externelResolvers ++= Seq(
+externalResolvers ++= Seq(
   "Socrata Artifactory Lib Releases" at "https://repo.socrata.com/artifactory/libs-release/",
   Resolver.url("Socrata Ivy Lib Releases", url("https://repo.socrata.com/artifactory/ivy-libs-release"))(Resolver.ivyStylePatterns)
 )
