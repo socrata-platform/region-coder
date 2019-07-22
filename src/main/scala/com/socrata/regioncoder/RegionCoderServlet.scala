@@ -14,7 +14,7 @@ import org.scalatra.{AsyncResult, BadRequest, Ok}
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder with MetricsSupport {
 
-  val defaultColumnToReturn = "_feature_id"
+  def columnToReturn(idFieldName: Option[String]): String = idFieldName.getOrElse("_feature_id")
 
   val cacheConfig = rcConfig.cache
   val partitionXsize = rcConfig.partitioning.sizeX
@@ -45,7 +45,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     }
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = pointcodeTimer { regionCodeByPoint(params("resourceName"), defaultColumnToReturn, points) }
+      val is = pointcodeTimer { regionCodeByPoint(params("resourceName"), columnToReturn(params.get("idFieldName")), points) }
     }
   }
 
@@ -58,7 +58,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = stringcodeTimer { regionCodeByString(params("resourceName"), column, defaultColumnToReturn, strings) }
+      val is = stringcodeTimer { regionCodeByString(params("resourceName"), column, columnToReturn(params.get("idFieldName")), strings) }
     }
   }
 
