@@ -1,4 +1,4 @@
-FROM socrata/java8
+FROM socrata/java8-bionic
 
 # Service specific settings.
 ENV SERVER_NAME region-coder
