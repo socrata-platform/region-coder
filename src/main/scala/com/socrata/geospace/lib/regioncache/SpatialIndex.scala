@@ -110,7 +110,7 @@ object SpatialIndex {
   /**
    * Create a SpatialIndex[Int] from a Layer/FeatureSource.  The feature ID will be stored in the index.
    *
-   * @param layer an [[org.geoscript.layer.Layer]] or GeoTools FeatureSource.
+   * @param layer an org.geoscript.layer.Layer or GeoTools FeatureSource.
    * @return a SpatialIndex[Int] where each entry is the geometry and ID from each feature
    */
   def apply(layer: Layer): SpatialIndex[Int] = apply(layer.features.toSeq)
