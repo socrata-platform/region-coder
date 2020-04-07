@@ -20,6 +20,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   def pointcodeTimer[A](f: => A): A = timer("pointcode") {f}.call()
   def stringcodeTimer[A](f: => A): A = timer("stringcode") {f}.call()
+  def transformcodeTimer[A](f: => A): A = timer("stringcode") {f}.call()
   def debugGetTimer[A](f: => A): A = timer("debug-get") {f}.call()
   def debugClearTimer[A](f: => A): A = timer("debug-clear") {f}.call()
 
@@ -58,6 +59,23 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
       val is = stringcodeTimer { regionCodeByString(params("resourceName"), columnToMatch, columnToReturn, strings) }
+    }
+  }
+
+  post("/v2/regions/:resourceName/transformcode") {
+    val points = parsedBody.extract[Seq[Seq[Double]]]
+    if (points.isEmpty) {
+      halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
+    }
+    val featureIdColumn = params.getOrElse("featureIdColumn", halt(BadRequest("Missing param 'featureIdColumn'")))
+    val labelColumnToReturn =
+      params.getOrElse("labelColumnToReturn", halt(BadRequest("Missing param 'labelColumnToReturn'")))
+
+    new AsyncResult {
+      override val timeout = rcConfig.shapePayloadTimeout
+      val is = transformcodeTimer {
+        regionCodeByTransform(params("resourceName"), featureIdColumn, labelColumnToReturn,points)
+      }
     }
   }
 
