@@ -3,6 +3,7 @@ package com.socrata.geospace.lib.regioncache
 import org.geoscript.feature._
 import org.geoscript.layer._
 import org.scalatest.{FunSuiteLike, Matchers}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class HashMapRegionCacheSpec extends FunSuiteLike with Matchers with RegionCacheSpecHelper {
   val hashMapCache = new HashMapRegionCache(testConfig)

@@ -9,10 +9,16 @@ import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
 import org.scalatra.metrics.MetricsSupport
 import org.scalatra.{AsyncResult, BadRequest, Ok}
+import scala.concurrent.ExecutionContext
 
 // scalastyle:off multiple.string.literals
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder with MetricsSupport {
+
+  // For FutureSupport / async stuff
+  implicit val executor = MDCHttpExecutionContext.fromThread(
+    ExecutionContext.fromExecutor(new BlockingThreadPool(rcConfig.threadPoolLimit),
+                                  log("Uncaught exception", _)))
 
   val cacheConfig = rcConfig.cache
   val partitionXsize = rcConfig.partitioning.sizeX

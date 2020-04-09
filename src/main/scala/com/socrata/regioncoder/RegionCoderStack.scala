@@ -4,6 +4,7 @@ import org.json4s.{DefaultFormats, Formats}
 import org.scalatra._
 import org.scalatra.json.JacksonJsonSupport
 import org.slf4j.{MDC, LoggerFactory}
+import scala.concurrent.ExecutionContext
 
 trait RegionCoderStack extends ScalatraServlet
   with JacksonJsonSupport with FutureSupport with ScalatraLogging {
@@ -12,10 +13,6 @@ trait RegionCoderStack extends ScalatraServlet
   // the JValueResult trait.
   protected implicit def jsonFormats: Formats =
     DefaultFormats + new NoneSerializer + new EnvelopeSerializer
-
-  // For FutureSupport / async stuff
-  protected implicit val executor = MDCHttpExecutionContext.fromThread(
-    concurrent.ExecutionContext.Implicits.global)
 
   // Before every action runs, set the content type to be in JSON format.
   before() {

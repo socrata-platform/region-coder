@@ -2,6 +2,7 @@ package com.socrata.geospace.lib.regioncache
 
 import org.geoscript.geometry.builder
 import org.scalatest.{Matchers, FunSuiteLike}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class SpatialRegionCacheSpec extends FunSuiteLike with Matchers with RegionCacheSpecHelper {
   val cache = new SpatialRegionCache(testConfig)

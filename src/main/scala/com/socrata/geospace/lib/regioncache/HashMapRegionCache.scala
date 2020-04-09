@@ -8,13 +8,14 @@ import com.socrata.thirdparty.geojson.FeatureJson
 import com.typesafe.config.Config
 import org.geoscript.feature.Feature
 import scala.util.Success
+import scala.concurrent.ExecutionContext
 
 /**
   * Caches indices of the region datasets for geo-region-coding in a hashmap
   * for simple string matching.
   * @param config Cache configuration
   */
-class HashMapRegionCache(config: Config) extends MemoryManagingRegionCache[Map[String, Int]](config) {
+class HashMapRegionCache(config: Config)(implicit executionContext: ExecutionContext) extends MemoryManagingRegionCache[Map[String, Int]](config) {
 
   /**
     * Generates an in-memory map for the dataset given the set of features
