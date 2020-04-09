@@ -1,6 +1,7 @@
 package com.socrata.regioncoder
 
 import javax.servlet.http.{HttpServletResponse => HttpStatus}
+import java.util.concurrent.ForkJoinPool
 
 import com.rojoma.json.v3.ast.{JObject, JString}
 import com.rojoma.json.v3.util.JsonUtil
@@ -17,7 +18,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   // For FutureSupport / async stuff
   implicit val executor = MDCHttpExecutionContext.fromThread(
-    ExecutionContext.fromExecutor(new BlockingThreadPool(rcConfig.threadPoolLimit),
+    ExecutionContext.fromExecutor(new ForkJoinPool(rcConfig.threadPoolLimit),
                                   log("Uncaught exception", _)))
 
   val cacheConfig = rcConfig.cache
