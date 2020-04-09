@@ -10,7 +10,7 @@ import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory, Polyg
 import com.vividsolutions.jts.io.WKTWriter
 import org.geoscript.feature._
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 import spray.caching.LruCache
 
 /**
@@ -37,7 +37,7 @@ case class RegionCacheKey(resourceName: String, columnName: String, envelope: Op
   * @param maxEntries          Maximum capacity of the region cache
   * @tparam T                  Cache entry type
   */
-abstract class RegionCache[T](maxEntries: Int = 100) //scalastyle:ignore
+abstract class RegionCache[T](maxEntries: Int = 100)(implicit executionContext: ExecutionContext)  //scalastyle:ignore
   extends Logging with Metrics {
 
   // To be the same value as HttpStatus.SC_OK
@@ -45,7 +45,7 @@ abstract class RegionCache[T](maxEntries: Int = 100) //scalastyle:ignore
 
   private val GaugeNumEntries = "num-entries"
 
-  def this(config: Config) = this(config.getInt("max-entries"))
+  def this(config: Config)(implicit executionContext: ExecutionContext) = this(config.getInt("max-entries"))
 
   protected val cache = LruCache[T](maxEntries)
 

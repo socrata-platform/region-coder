@@ -6,6 +6,7 @@ import com.typesafe.config.Config
 import com.vividsolutions.jts.geom.{Envelope, Point}
 import org.geoscript.geometry.builder
 import scala.concurrent.{ExecutionContext, Future}
+import java.util.concurrent.Executors
 
 trait RegionCoder {
   def cacheConfig: Config

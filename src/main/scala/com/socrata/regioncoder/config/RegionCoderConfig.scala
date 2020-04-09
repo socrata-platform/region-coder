@@ -22,6 +22,8 @@ class RegionCoderConfig(config: Config) {
   val discovery = new DiscoveryConfig(config, "service-advertisement")
   val curator = new CuratorConfig(config, "curator")
   val sodaFountain = new CuratedServiceConfig(config.getConfig("soda-fountain"))
+
+  val threadPoolLimit = config.getInt("region-coder.thread-pool-limit")
 }
 
 class RegionPartitionConfig(config: Config) {

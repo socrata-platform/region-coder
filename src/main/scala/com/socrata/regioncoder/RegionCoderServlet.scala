@@ -1,6 +1,7 @@
 package com.socrata.regioncoder
 
 import javax.servlet.http.{HttpServletResponse => HttpStatus}
+import java.util.concurrent.ForkJoinPool
 
 import com.rojoma.json.v3.ast.{JObject, JString}
 import com.rojoma.json.v3.util.JsonUtil
@@ -9,10 +10,16 @@ import com.socrata.regioncoder.config.RegionCoderConfig
 import com.socrata.soda.external.SodaFountainClient
 import org.scalatra.metrics.MetricsSupport
 import org.scalatra.{AsyncResult, BadRequest, Ok}
+import scala.concurrent.ExecutionContext
 
 // scalastyle:off multiple.string.literals
 class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
   extends RegionCoderStack with RegionCoder with MetricsSupport {
+
+  // For FutureSupport / async stuff
+  implicit val executor = MDCHttpExecutionContext.fromThread(
+    ExecutionContext.fromExecutor(new ForkJoinPool(rcConfig.threadPoolLimit),
+                                  log("Uncaught exception", _)))
 
   val cacheConfig = rcConfig.cache
   val partitionXsize = rcConfig.partitioning.sizeX

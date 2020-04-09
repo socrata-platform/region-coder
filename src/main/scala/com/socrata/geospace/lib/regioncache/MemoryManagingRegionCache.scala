@@ -3,6 +3,7 @@ package com.socrata.geospace.lib.regioncache
 import com.socrata.geospace.lib.Utils
 import Utils._
 import com.typesafe.config.Config
+import scala.concurrent.ExecutionContext
 
 /**
   * When a new layer/region dataset is added, the memory managing region cache will automatically
@@ -24,8 +25,9 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
                                             minFreePct: Int = 20, //scalastyle:ignore
                                             targetFreePct: Int = 40, //scalastyle:ignore
                                             iterationIntervalMs: Int = 100)  //scalastyle:ignore
+                                           (implicit executionContext: ExecutionContext)
   extends RegionCache[T](maxEntries) {
-  def this(config: Config) = this(config.getInt("max-entries"),
+  def this(config: Config)(implicit executionContext: ExecutionContext) = this(config.getInt("max-entries"),
     config.getBoolean("enable-depressurize"),
     config.getInt("min-free-percentage"),
     config.getInt("target-free-percentage"),

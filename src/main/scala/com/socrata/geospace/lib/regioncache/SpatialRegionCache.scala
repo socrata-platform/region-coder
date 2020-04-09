@@ -8,8 +8,7 @@ import com.socrata.thirdparty.geojson.FeatureJson
 import com.typesafe.config.Config
 import com.vividsolutions.jts.geom.Envelope
 import org.geoscript.feature._
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
 import spray.caching.LruCache
 
@@ -18,7 +17,9 @@ import spray.caching.LruCache
   * that can then be used to do spatial calculations (eg. shape.intersectsWith(shape).
   * @param config Cache configuration
   */
-class SpatialRegionCache(config: Config) extends MemoryManagingRegionCache[SpatialIndex[Int]](config) {
+class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionContext)
+    extends MemoryManagingRegionCache[SpatialIndex[Int]](config)
+{
   val defaultRegionGeomName = "the_geom"
 
   val polygon = "polygon"
