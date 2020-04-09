@@ -10,7 +10,7 @@ class BlockingThreadPool(limit: Int) extends Executor {
     semaphore.acquire()
     try {
       underlying.execute(new Runnable {
-                           override def run() {
+                           override def run(): Unit = {
                              try {
                                r.run()
                              } finally {

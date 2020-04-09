@@ -17,7 +17,9 @@ import spray.caching.LruCache
   * that can then be used to do spatial calculations (eg. shape.intersectsWith(shape).
   * @param config Cache configuration
   */
-class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionContext) extends MemoryManagingRegionCache[SpatialIndex[Int]](config) {
+class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionContext)
+    extends MemoryManagingRegionCache[SpatialIndex[Int]](config)
+{
   val defaultRegionGeomName = "the_geom"
 
   val polygon = "polygon"

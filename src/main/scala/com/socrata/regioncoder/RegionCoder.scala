@@ -7,17 +7,8 @@ import com.vividsolutions.jts.geom.{Envelope, Point}
 import org.geoscript.geometry.builder
 import scala.concurrent.{ExecutionContext, Future}
 import java.util.concurrent.Executors
-import org.slf4j.LoggerFactory
-
-object RegionCoder {
-  private val log = LoggerFactory.getLogger(classOf[RegionCoder])
-}
 
 trait RegionCoder {
-  import RegionCoder._
-
-  implicit val executor: ExecutionContext
-
   def cacheConfig: Config
   def partitionXsize: Double
   def partitionYsize: Double
@@ -25,6 +16,8 @@ trait RegionCoder {
 
   lazy val spatialCache = new SpatialRegionCache(cacheConfig)
   lazy val stringCache  = new HashMapRegionCache(cacheConfig)
+
+  protected implicit val executor: ExecutionContext
 
   // Given points, encode them with SpatialIndex and return a sequence of IDs, None if no matching region
   // Points are first encoded into partitions, which are rectangular regions of points

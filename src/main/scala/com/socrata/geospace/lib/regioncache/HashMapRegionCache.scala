@@ -15,7 +15,9 @@ import scala.concurrent.ExecutionContext
   * for simple string matching.
   * @param config Cache configuration
   */
-class HashMapRegionCache(config: Config)(implicit executionContext: ExecutionContext) extends MemoryManagingRegionCache[Map[String, Int]](config) {
+class HashMapRegionCache(config: Config)(implicit executionContext: ExecutionContext)
+    extends MemoryManagingRegionCache[Map[String, Int]](config)
+{
 
   /**
     * Generates an in-memory map for the dataset given the set of features
