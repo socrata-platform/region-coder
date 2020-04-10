@@ -43,21 +43,21 @@ trait RegionCoder {
   }
 
   protected def regionCodeByTransform(resourceName: String,
-                                      idFeatureColumn: String,
-                                      labelColumnToReturn: String,
+                                      featureIdColumn: String,
+                                      labelToReturn: String,
                                       points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
     val geoPoints = points.map { case Seq(x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)
     val indexStringMap = labelCache.constructHashMap(
       sodaFountain,
       resourceName,
-      labelColumnToReturn,
-      idFeatureColumn
+      featureIdColumn,
+      labelToReturn
     )
     // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
     // Now we have a Seq[Future[Envelope -> SpatialIndex]]
     val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
-      spatialCache.getFromSoda(sodaFountain, resourceName, idFeatureColumn, Some(partEnvelope))
+      spatialCache.getFromSoda(sodaFountain, resourceName, featureIdColumn, Some(partEnvelope))
         .map(partEnvelope -> _)
     }
     // Turn sequence of futures into one Future[Map[Envelope -> SpatialIndex]]
