@@ -3,10 +3,13 @@ package com.socrata.geospace.lib.regioncache
 import com.rojoma.json.v3.ast.{JArray, JObject, JString}
 import com.socrata.geospace.lib.client.SodaResponse
 import com.socrata.soda.external.SodaFountainClient
+import com.socrata.soql.environment.ResourceName
 import com.typesafe.config.Config
+
 import scala.concurrent.ExecutionContext
 
-class LabelCache(config: Config)(implicit executionContext: ExecutionContext) extends RegionCache[Map[Int, String]](config) {
+class LabelCache(config: Config)(implicit executionContext: ExecutionContext)
+  extends RegionCache[Map[Int, String]](config) {
 
   protected def getEntryFromFeatureJson(features: Seq[com.socrata.thirdparty.geojson.FeatureJson],
                                         resourceName: String,
@@ -17,24 +20,21 @@ class LabelCache(config: Config)(implicit executionContext: ExecutionContext) ex
                                      keyName: String): Map[Int,String] = ???
 
   /**
-   * Generates an in-memory map for the dataset mapping the numeric feature id to their string label
+   * Generates an in-memory map for the dataset mapping the numeric feature ids to a string label
    * @param sodaFountain the Soda Fountain client
    * @param resourceName the resource name to pull from Soda Fountain and the column to use as the cache entry key
    * @param featureIdColumn name of the column that should be used as the cache entry value
    * @return Map containing the feature ids and labels for a dataset
    */
-  def constructHashMap(sodaFountain: SodaFountainClient,
-                       resourceName: String,
-                       featureIdColumn: String,
-                       labelToReturn: String): Map[Int, String] = {
+  def constructHashMap(sodaFountain: SodaFountainClient, resourceName: String,
+                       featureIdColumn: String, labelToReturn: String): Map[Int, String] = {
     val sodaResponse = sodaReadTimer.time {
       sodaFountain.query(resourceName,
         Some("json"),
         Iterable(("$query",
           s"select $labelToReturn as _label, $featureIdColumn as _id")))
     }
-    // Originally using javax lib for this one status code, I doubt highly it will ever change, and
-    // we will avoid having to make an import for single item by statically adding it.
+
     val payload = SodaResponse.check(sodaResponse, StatusOK)
     val exception = new RuntimeException(s"dataset $resourceName contains a feature with missing" +
                                          s"$labelToReturn/$featureIdColumn property")
