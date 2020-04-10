@@ -4,7 +4,6 @@ import com.rojoma.json.v3.ast.{JArray, JObject, JString}
 import com.socrata.geospace.lib.client.SodaResponse
 import com.socrata.soda.external.SodaFountainClient
 import com.typesafe.config.Config
-
 import scala.concurrent.ExecutionContext
 
 class LabelCache(config: Config)(implicit executionContext: ExecutionContext) extends RegionCache[Map[Int, String]](config) {

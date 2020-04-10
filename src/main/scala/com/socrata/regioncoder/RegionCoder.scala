@@ -54,14 +54,18 @@ trait RegionCoder {
     }
   }
 
-  protected def regionCodeLabelByPoint(resourceName: String,
-                                       featureIdColumn: String,
-                                       labelToReturn: String,
-                                       points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
-
+  protected def regionCodeByTransform(resourceName: String,
+                                      featureIdColumn: String,
+                                      labelToReturn: String,
+                                      points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
     val geoPoints = points.map { case Seq(x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)
-    val indexStringMap = labelCache.constructHashMap(sodaFountain, resourceName, featureIdColumn, labelToReturn)
+    val indexStringMap = labelCache.constructHashMap(
+      sodaFountain,
+      resourceName,
+      featureIdColumn,
+      labelToReturn
+    )
     // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
     // Now we have a Seq[Future[Envelope -> SpatialIndex]]
     val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
@@ -77,8 +81,11 @@ trait RegionCoder {
     }
   }
 
-  protected def regionCodeByString(resourceName: String, columnToMatch: String,
-                                   columnToReturn: String, strings: Seq[String]): Future[Seq[Option[Int]]] = {
+  protected def regionCodeByString(resourceName: String,
+                                   columnToMatch: String,
+                                   columnToReturn: String,
+                                   strings: Seq[String]): Future[Seq[Option[Int]]] = {
+
     val futureIndex: Future[Map[String, Int]] = stringCache.getFromSoda(
       sodaFountain, RegionCacheKey(resourceName, columnToMatch), columnToReturn)
     futureIndex.map { index => strings.map { str => index.get(str.toLowerCase) } }
