@@ -75,8 +75,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
       halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
     }
     val featureIdColumn = params.getOrElse("featureIdColumn", halt(BadRequest("Missing param 'featureIdColumn'")))
-    val labelToReturn =
-      params.getOrElse("labelToReturn", halt(BadRequest("Missing param 'labelToReturn'")))
+    val labelToReturn = params.get("labelToReturn")
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
       val is = transformcodeTimer {

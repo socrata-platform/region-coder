@@ -20,6 +20,17 @@ trait RegionCoder {
 
   protected implicit val executor: ExecutionContext
 
+  protected def regionCodeByTransform(resourceName: String,
+                                      featureIdColumn: String,
+                                      labelToReturn: Option[String],
+                                      points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
+    labelToReturn match {
+      case Some(_labelToReturn) => regionCodeLabelByPoint(resourceName, featureIdColumn, _labelToReturn, points)
+      case _ => regionCodeByPoint(resourceName, featureIdColumn, points)
+    }
+
+  }
+
   // Given points, encode them with SpatialIndex and return a sequence of IDs, None if no matching region
   // Points are first encoded into partitions, which are rectangular regions of points
   // Partitions help divide regions into manageable chunks that fit in memory
@@ -43,18 +54,14 @@ trait RegionCoder {
     }
   }
 
-  protected def regionCodeByTransform(resourceName: String,
-                                      featureIdColumn: String,
-                                      labelToReturn: String,
-                                      points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
+  protected def regionCodeLabelByPoint(resourceName: String,
+                                       featureIdColumn: String,
+                                       labelToReturn: String,
+                                       points: Seq[Seq[Double]]): Future[Seq[Option[Any]]] = {
+
     val geoPoints = points.map { case Seq(x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)
-    val indexStringMap = labelCache.constructHashMap(
-      sodaFountain,
-      resourceName,
-      featureIdColumn,
-      labelToReturn
-    )
+    val indexStringMap = labelCache.constructHashMap(sodaFountain, resourceName, featureIdColumn, labelToReturn)
     // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
     // Now we have a Seq[Future[Envelope -> SpatialIndex]]
     val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
@@ -70,10 +77,8 @@ trait RegionCoder {
     }
   }
 
-  protected def regionCodeByString(resourceName: String,
-                                   columnToMatch: String,
-                                   columnToReturn: String,
-                                   strings: Seq[String]): Future[Seq[Option[Int]]] = {
+  protected def regionCodeByString(resourceName: String, columnToMatch: String,
+                                   columnToReturn: String, strings: Seq[String]): Future[Seq[Option[Int]]] = {
     val futureIndex: Future[Map[String, Int]] = stringCache.getFromSoda(
       sodaFountain, RegionCacheKey(resourceName, columnToMatch), columnToReturn)
     futureIndex.map { index => strings.map { str => index.get(str.toLowerCase) } }

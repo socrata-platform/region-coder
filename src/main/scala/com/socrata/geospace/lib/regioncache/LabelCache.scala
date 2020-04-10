@@ -5,7 +5,9 @@ import com.socrata.geospace.lib.client.SodaResponse
 import com.socrata.soda.external.SodaFountainClient
 import com.typesafe.config.Config
 
-class LabelCache(config: Config) extends RegionCache[Map[Int, String]](config) {
+import scala.concurrent.ExecutionContext
+
+class LabelCache(config: Config)(implicit executionContext: ExecutionContext) extends RegionCache[Map[Int, String]](config) {
 
   protected def getEntryFromFeatureJson(features: Seq[com.socrata.thirdparty.geojson.FeatureJson],
                                         resourceName: String,
@@ -17,9 +19,10 @@ class LabelCache(config: Config) extends RegionCache[Map[Int, String]](config) {
 
   /**
    * Generates an in-memory map for the dataset mapping the numeric feature id to their string label
-   * @param keyAttribute   Name of the feature attribute to use as the cache entry key
-   * @param valueAttribute Name of the feature attribute to use as the cache entry value
-   * @return Map containing a datasets feature ids and labels
+   * @param sodaFountain the Soda Fountain client
+   * @param resourceName the resource name to pull from Soda Fountain and the column to use as the cache entry key
+   * @param featureIdColumn name of the column that should be used as the cache entry value
+   * @return Map containing the feature ids and labels for a dataset
    */
   def constructHashMap(sodaFountain: SodaFountainClient,
                        resourceName: String,
