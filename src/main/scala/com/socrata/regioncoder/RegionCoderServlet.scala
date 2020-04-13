@@ -32,7 +32,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   get("/") {
     """{
-      |"hello": "region-coder"
+      |"hello": "region-coder why scala????"
     }""".stripMargin
   }
 
@@ -51,7 +51,37 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
     new AsyncResult {
       override val timeout = rcConfig.shapePayloadTimeout
-      val is = pointcodeTimer { regionCodeByPoint(params("resourceName"), columnToReturn, points) }
+      val is = pointcodeTimer {
+        regionCodeByPoint(
+          params("resourceName"),
+          columnToReturn,
+          points,
+          (featureId: String) => featureId.toInt
+        )
+      }
+    }
+  }
+
+  // This is a newer version of the the v2 pointcode call
+  // it behaves in the same way, but doesn't try to turn the cache's return value
+  // into an int, it just passes it back as a string.
+  post("/v3/regions/:resourceName/pointcode") {
+    val points = parsedBody.extract[Seq[Seq[Double]]]
+    if (points.isEmpty) {
+      halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
+    }
+    val columnToReturn = params.getOrElse("columnToReturn", halt(BadRequest("Missing param 'columnToReturn'")))
+
+    new AsyncResult {
+      override val timeout = rcConfig.shapePayloadTimeout
+      val is = pointcodeTimer {
+        regionCodeByPoint(
+          params("resourceName"),
+          columnToReturn,
+          points,
+          (featureId: String) => featureId
+        )
+      }
     }
   }
 
