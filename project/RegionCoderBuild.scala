@@ -3,6 +3,7 @@ import sbt.Keys._
 import sbt._
 import sbtbuildinfo.BuildInfoKeys._
 import sbtbuildinfo.{BuildInfoKey, BuildInfoOption, BuildInfoPlugin}
+import sbtrelease.ReleasePlugin.autoImport.{releaseProcess, ReleaseTransformations}
 
 object RegionCoderBuild extends Build {
   private val port = SettingKey[Int]("port")
@@ -34,7 +35,8 @@ object RegionCoderBuild extends Build {
           new org.joda.time.DateTime(System.currentTimeMillis).toString()
         },
         BuildInfoKey.action("revision") { gitSha }),
-      buildInfoOptions += BuildInfoOption.ToMap
+      buildInfoOptions += BuildInfoOption.ToMap,
+      releaseProcess := releaseProcess.value.filterNot(_ == ReleaseTransformations.publishArtifacts)
     )
   ).enablePlugins(BuildInfoPlugin)
 
