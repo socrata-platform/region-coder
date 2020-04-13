@@ -32,7 +32,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
 
   get("/") {
     """{
-      |"hello": "region-coder why scala????"
+      |"hello": "region-coder"
     }""".stripMargin
   }
 
