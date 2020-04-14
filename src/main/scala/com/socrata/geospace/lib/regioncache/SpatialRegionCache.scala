@@ -18,7 +18,7 @@ import spray.caching.LruCache
   * @param config Cache configuration
   */
 class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionContext)
-    extends MemoryManagingRegionCache[SpatialIndex[Int]](config)
+    extends MemoryManagingRegionCache[SpatialIndex[String]](config)
 {
   val defaultRegionGeomName = "the_geom"
 
@@ -35,7 +35,8 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @param features Features from which to generate a SpatialIndex
     * @return SpatialIndex containing the dataset features
     */
-  override def getEntryFromFeatures(features: Seq[Feature], keyName: String): SpatialIndex[Int] = SpatialIndex(features)
+  override def getEntryFromFeatures(features: Seq[Feature], keyName: String): SpatialIndex[String] =
+    SpatialIndex(features)
 
   /**
     * Generates a SpatialIndex for the dataset given feature JSON
@@ -47,12 +48,12 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
   override def getEntryFromFeatureJson(features: Seq[FeatureJson],
                                        resourceName: String,
                                        keyAttribute: String,
-                                       valueAttribute: String): SpatialIndex[Int] = {
+                                       valueAttribute: String): SpatialIndex[String] = {
     logger.info("Converting {} features to SpatialIndex entries...", features.length.toString())
     var i = 0
     val entries = features.flatMap { case FeatureJson(properties, geometry, _) =>
       val entryOpt = properties.get(valueAttribute).
-        collect { case JString(id) => GeoEntry.compact(geometry, id.toInt) }
+        collect { case JString(id) => GeoEntry.compact(geometry, id) }
       if (!entryOpt.isDefined) {
         throw new RuntimeException(s"dataset $resourceName contains a feature with missing $valueAttribute property")
       }
@@ -91,7 +92,7 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @param features     a Seq of Features to use to create the cache entry if it doesn't exist
     * @return             A SpatialIndex future representing the cached dataset
     */
-  def getFromFeatures(resourceName: String, features: Seq[Feature]): Future[SpatialIndex[Int]] =
+  def getFromFeatures(resourceName: String, features: Seq[Feature]): Future[SpatialIndex[String]] =
     getFromFeatures(RegionCacheKey(resourceName, defaultRegionGeomName), features)
 
   /**
@@ -107,7 +108,7 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
   def getFromSoda(sodaFountain: SodaFountainClient,
                   resourceName: String,
                   valueColumnName: String,
-                  envelope: Option[Envelope] = None): Future[SpatialIndex[Int]] =
+                  envelope: Option[Envelope] = None): Future[SpatialIndex[String]] =
     for { geomColumn <- getGeomColumnFromSoda(sodaFountain, resourceName)
           spatialIndex <- getFromSoda(sodaFountain,
             RegionCacheKey(resourceName, geomColumn, envelope),
