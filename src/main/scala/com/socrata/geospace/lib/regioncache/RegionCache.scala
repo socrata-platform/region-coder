@@ -19,7 +19,7 @@ import spray.caching.LruCache
   * @param columnName   Name of the column used as a key for individual features inside the cache entry
   * @param envelope All geometries must be within or intersect with this envelope/bounding box
   */
-case class RegionCacheKey(resourceName: String, columnName: String, envelope: Option[Envelope] = None)
+case class RegionCacheKey(resourceName: String, columnName: String, columnToReturn: String, envelope: Option[Envelope] = None)
 
 /**
   * The RegionCache caches indices of the region datasets for geo-region-coding.

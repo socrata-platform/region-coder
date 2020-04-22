@@ -48,7 +48,7 @@ trait RegionCoder {
                                    columnToReturn: String,
                                    strings: Seq[String]): Future[Seq[Option[Int]]] = {
     val futureIndex = stringCache.getFromSoda(
-      sodaFountain, RegionCacheKey(resourceName, columnToMatch), columnToReturn)
+      sodaFountain, RegionCacheKey(resourceName, columnToMatch, columnToReturn), columnToReturn)
     futureIndex.map { index => strings.map { str => index.get(str.toLowerCase) } }
   }
 

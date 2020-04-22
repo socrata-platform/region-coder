@@ -92,8 +92,8 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @param features     a Seq of Features to use to create the cache entry if it doesn't exist
     * @return             A SpatialIndex future representing the cached dataset
     */
-  def getFromFeatures(resourceName: String, features: Seq[Feature]): Future[SpatialIndex[String]] =
-    getFromFeatures(RegionCacheKey(resourceName, defaultRegionGeomName), features)
+  def getFromFeatures(resourceName: String, columnToReturn: String, features: Seq[Feature]): Future[SpatialIndex[String]] =
+    getFromFeatures(RegionCacheKey(resourceName, defaultRegionGeomName, columnToReturn), features)
 
   /**
     * Gets a SpatialIndex from the cache, populating it from Soda Fountain as needed.
@@ -111,7 +111,7 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
                   envelope: Option[Envelope] = None): Future[SpatialIndex[String]] =
     for { geomColumn <- getGeomColumnFromSoda(sodaFountain, resourceName)
           spatialIndex <- getFromSoda(sodaFountain,
-            RegionCacheKey(resourceName, geomColumn, envelope),
+            RegionCacheKey(resourceName, geomColumn, valueColumnName, envelope),
             valueColumnName) }
       yield spatialIndex
 
