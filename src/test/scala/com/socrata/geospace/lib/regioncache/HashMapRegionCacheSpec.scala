@@ -44,9 +44,9 @@ class HashMapRegionCacheSpec extends FunSuiteLike with Matchers with RegionCache
   // purposes, and the functionality does actually work E2E as expected.
   ignore("indicesByLeastRecentlyUsed") {
     val wards = Shapefile("data/chicago_wards/Wards.shp").features
-    val key1 = RegionCacheKey("abcd-1234", "ALDERMAN")
-    val key2 = RegionCacheKey("abcd-1234", "ADDRESS")
-    val key3 = RegionCacheKey("abcd-1234", "ADDRESS2")
+    val key1 = RegionCacheKey("abcd-1234", "ALDERMAN", "_feature_id")
+    val key2 = RegionCacheKey("abcd-1234", "ADDRESS", "_feature_id")
+    val key3 = RegionCacheKey("abcd-1234", "ADDRESS2", "_feature_id")
 
     //initialize features with keys here
     hashMapCache.getFromFeatures(key1, wards.toSeq.take(8))
