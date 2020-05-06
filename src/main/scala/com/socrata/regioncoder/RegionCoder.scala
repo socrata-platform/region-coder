@@ -24,7 +24,7 @@ trait RegionCoder {
   // Partitions help divide regions into manageable chunks that fit in memory
   protected def regionCodeByPoint[T](resourceName: String,
                                   columnToReturn: String,
-                                  points: Seq[Seq[Double]],
+                                  points: IndexedSeq[Seq[Double]],
                                   convert: String => T): Future[Seq[Option[T]]] = {
     val geoPoints = points.map { case Seq(x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)

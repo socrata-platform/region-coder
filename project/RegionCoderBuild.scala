@@ -21,6 +21,8 @@ object RegionCoderBuild extends Build {
       name := "region-coder",
       scalaVersion := "2.10.7",
       port in Conf := 2021,
+      com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Test := {},
+      com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Compile := {},
       externalResolvers := Seq(
       "Socrata Artifactory Libs Release" at "https://repo.socrata.com/artifactory/libs-release/",
       "Socrata Geotools" at "https://repo.socrata.com/artifactory/socrata-sbt-repo/"),
