@@ -43,7 +43,10 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
   // Request body is a JSON array of points. Each point is an array of length 2.
   // Example: [[-87.6847,41.8369],[-122.3331,47.6097],...]
   post("/v2/regions/:resourceName/pointcode") {
-    val points = parsedBody.extract[Seq[Seq[Double]]]
+    // why not just extract directly to Vector?  Because that compiles
+    // but this STUPID JSON LIBRARY then casts a List to Vector and it
+    // explodes at runtime!
+    val points = parsedBody.extract[Seq[Seq[Double]]].toVector
     if (points.isEmpty) {
       halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
     }
@@ -66,7 +69,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
   // it behaves in the same way, but doesn't try to turn the cache's return value
   // into an int, it just passes it back as a string.
   post("/v3/regions/:resourceName/pointcode") {
-    val points = parsedBody.extract[Seq[Seq[Double]]]
+    val points = parsedBody.extract[Seq[Seq[Double]]].toVector
     if (points.isEmpty) {
       halt(HttpStatus.SC_BAD_REQUEST, s"Could not parse '${request.body}'.  Must be in the form [[x, y],[a,b],...]")
     }
