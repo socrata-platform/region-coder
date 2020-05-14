@@ -6,12 +6,12 @@ import com.socrata.thirdparty.geojson.{FeatureCollectionJson, FeatureJson, GeoJs
 import com.socrata.thirdparty.metrics.Metrics
 import com.typesafe.config.Config
 import com.typesafe.scalalogging.slf4j.Logging
+import com.rojoma.json.v3.util.{AutomaticJsonEncodeBuilder, NullForNone}
 import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory, Polygon}
 import com.vividsolutions.jts.io.WKTWriter
 import org.geoscript.feature._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext
-import spray.caching.LruCache
 
 /**
   * Represents the key for a region cache (dataset resource name + column name)
@@ -19,7 +19,12 @@ import spray.caching.LruCache
   * @param columnName   Name of the column used as a key for individual features inside the cache entry
   * @param envelope All geometries must be within or intersect with this envelope/bounding box
   */
+@NullForNone
 case class RegionCacheKey(resourceName: String, columnName: String, columnToReturn: String, envelope: Option[Envelope] = None)
+object RegionCacheKey {
+  import com.socrata.regioncoder.CustomSerializers._
+  implicit val jEncode = AutomaticJsonEncodeBuilder[RegionCacheKey]
+}
 
 /**
   * The RegionCache caches indices of the region datasets for geo-region-coding.
@@ -37,7 +42,7 @@ case class RegionCacheKey(resourceName: String, columnName: String, columnToRetu
   * @param maxEntries          Maximum capacity of the region cache
   * @tparam T                  Cache entry type
   */
-abstract class RegionCache[T](maxEntries: Int = 100)(implicit executionContext: ExecutionContext)  //scalastyle:ignore
+abstract class RegionCache[T](maxEntries: Int = 100)  //scalastyle:ignore
   extends Logging with Metrics {
 
   // To be the same value as HttpStatus.SC_OK
@@ -47,7 +52,7 @@ abstract class RegionCache[T](maxEntries: Int = 100)(implicit executionContext: 
 
   def this(config: Config)(implicit executionContext: ExecutionContext) = this(config.getInt("max-entries"))
 
-  protected val cache = LruCache[T](maxEntries)
+  protected val cache = LruCache[RegionCacheKey, T](maxEntries)
 
   logger.info("Creating RegionCache with {} entries", maxEntries.toString())
 
@@ -101,10 +106,11 @@ abstract class RegionCache[T](maxEntries: Int = 100)(implicit executionContext: 
     *         Note that if this fails, then it will return a Failure, and can be processed further with
     *         onFailure(...) etc.
     */
-  def getFromFeatures(key: RegionCacheKey, features: Seq[Feature]): Future[T] = {
+  def getFromFeatures(key: RegionCacheKey, features: Seq[Feature]): T = {
     cache(key) {
       logger.info(s"Populating cache entry for res [${key.resourceName}], col [${key.columnName}] from features")
-      Future { prepForCaching(); getEntryFromFeatures(features, key.columnName) }
+      prepForCaching()
+      getEntryFromFeatures(features, key.columnName)
     }
   }
 
@@ -139,35 +145,32 @@ abstract class RegionCache[T](maxEntries: Int = 100)(implicit executionContext: 
     * @param key the resource name to pull from Soda Fountain and the column to use as the cache entry key
     * @param valueColumnName name of the column that should be used as the cache entry value
     */
-  def getFromSoda(sodaFountain: SodaFountainClient, key: RegionCacheKey, valueColumnName: String): Future[T] =
+  def getFromSoda(sodaFountain: SodaFountainClient, key: RegionCacheKey, valueColumnName: String): T =
     cache(key) {
       logger.info(s"Populating cache entry for resource [${key.resourceName}], column [] from soda fountain client")
       key.envelope.foreach { env => logger.info(s"  for envelope $env") }
-      Future {
-        prepForCaching()
-        // Ok, get a Try[JValue] for the response, then parse it using GeoJSON parser
-        val query = getQueryString(key)
-        val sodaResponse = sodaReadTimer.time {
-          sodaFountain.query(key.resourceName, Some("geojson"), Iterable(("$query", query)))
-        }
-        // Originally using javax lib for this one status code, I doubt highly it will ever change, and
-        // we will avoid having to make an import for single item by statically adding it.
-        val payload = SodaResponse.check(sodaResponse, StatusOK)
-        regionIndexLoadTimer.time {
-          payload.toOption.
-            flatMap {  jvalue => GeoJson.codec.decode(jvalue).right.toOption }.
-            collect { case FeatureCollectionJson(features, _) =>
-              getEntryFromFeatureJson(features, key.resourceName, key.columnName, valueColumnName)
-            }.
-            getOrElse {
-              val errMsg = "Could not read GeoJSON from soda fountain: " + payload.get
-              if (payload.isFailure) { throw new RuntimeException(errMsg, payload.failed.get) }
-              else                   { throw new RuntimeException(errMsg) }
-            }
-        }
+
+      prepForCaching()
+      // Ok, get a Try[JValue] for the response, then parse it using GeoJSON parser
+      val query = getQueryString(key)
+      val sodaResponse = sodaReadTimer.time {
+        sodaFountain.query(key.resourceName, Some("geojson"), Iterable(("$query", query)))
       }
-
-
+      // Originally using javax lib for this one status code, I doubt highly it will ever change, and
+      // we will avoid having to make an import for single item by statically adding it.
+      val payload = SodaResponse.check(sodaResponse, StatusOK)
+      regionIndexLoadTimer.time {
+        payload.toOption.
+          flatMap {  jvalue => GeoJson.codec.decode(jvalue).right.toOption }.
+          collect { case FeatureCollectionJson(features, _) =>
+            getEntryFromFeatureJson(features, key.resourceName, key.columnName, valueColumnName)
+          }.
+          getOrElse {
+            val errMsg = "Could not read GeoJSON from soda fountain: " + payload.get
+            if (payload.isFailure) { throw new RuntimeException(errMsg, payload.failed.get) }
+            else                   { throw new RuntimeException(errMsg) }
+          }
+      }
     }
 
   /**

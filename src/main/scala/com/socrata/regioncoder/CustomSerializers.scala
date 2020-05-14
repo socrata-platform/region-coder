@@ -1,15 +1,11 @@
 package com.socrata.regioncoder
 
-import org.json4s.CustomSerializer
-import org.json4s.JsonAST.{JString, JNull}
+import com.rojoma.json.v3.ast.JString
+import com.rojoma.json.v3.codec.JsonEncode
 import com.vividsolutions.jts.geom.Envelope
 
-class NoneSerializer extends CustomSerializer[Option[_]] ( format => (
-  { case JNull => None },
-  { case None => JNull }
-  ))
-
-class EnvelopeSerializer extends CustomSerializer[Envelope] ( format => (
-  Map.empty,
-  { case e: Envelope => JString(e.toString) }
-  ))
+object CustomSerializers {
+  implicit val envelopeEncode = new JsonEncode[Envelope] {
+    def encode(e: Envelope) = JString(e.toString)
+  }
+}

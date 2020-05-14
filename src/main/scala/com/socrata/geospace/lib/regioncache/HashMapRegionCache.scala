@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext
   * for simple string matching.
   * @param config Cache configuration
   */
-class HashMapRegionCache(config: Config)(implicit executionContext: ExecutionContext)
+class HashMapRegionCache(config: Config)
     extends MemoryManagingRegionCache[Map[String, Int]](config)
 {
 
@@ -59,19 +59,17 @@ class HashMapRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @return Indices in descending order of size by # of features
     */
   override def indicesBySizeDesc(): Seq[(RegionCacheKey, Int)] =
-    cache.keys.toSeq.map(key => (key, cache.get(key).get.value))
-      .collect { case (key: RegionCacheKey, Some(Success(index))) => (key, index.size) }
-      .sortBy(_._2)
-      .reverse
+    cache.entries.toSeq.
+      map { case (key, index) => (key, index.size) }.
+      sortBy(-_._2)
 
   /**
     * Returns cache entries in descending order of least-recently-used, not in constant time
     * @return cache entries in descending order of least-recently-used
     */
   override def entriesByLeastRecentlyUsed(): Seq[(RegionCacheKey, Int)] = {
-    cache.ascendingKeys().map(key => (key, cache.get(key).get.value))
-      .collect { case (key: RegionCacheKey, Some(Success(index))) => (key, index.size) }
-      .toSeq
+    cache.orderedEntries.
+      map { case (key, index) => (key, index.size) }
   }
 
 }

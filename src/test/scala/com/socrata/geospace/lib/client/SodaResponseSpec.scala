@@ -6,7 +6,6 @@ import com.socrata.soda.external.SodaFountainClient._
 import org.scalatest.{FunSuiteLike, Matchers}
 
 class SodaResponseSpec extends FunSuiteLike with Matchers {
-
   test("Happy path") {
     val result = Response(201, Some(JObject(Map("yay" -> JString("success!")))))
     val checked = SodaResponse.check(result, 201)
@@ -25,7 +24,7 @@ class SodaResponseSpec extends FunSuiteLike with Matchers {
     val result = Response(200, None)
     val checked = SodaResponse.check(result, 200)
     checked.isFailure should be (true)
-    checked.failed.get should be (JsonParseException)
+    checked.failed.get should be (JsonParseException())
   }
 
   case object MyException extends Exception("My custom exception")
