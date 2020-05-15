@@ -33,11 +33,11 @@ trait RegionCoder {
     try {
       // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
       // Now we have a Seq[Future[Envelope -> SpatialIndex]]
-      val callingThreadContext = MDC.getCopyOfContextMap
+      val callingThreadContext = Option(MDC.getCopyOfContextMap)
       val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
         executor.submit(new Callable[(Envelope, SpatialIndex[String])] {
                           def call() = {
-                            MDC.setContextMap(callingThreadContext)
+                            callingThreadContext.foreach(MDC.setContextMap)
                             partEnvelope -> spatialCache.getFromSoda(sodaFountain, resourceName, columnToReturn, Some(partEnvelope))
                           }
                         })

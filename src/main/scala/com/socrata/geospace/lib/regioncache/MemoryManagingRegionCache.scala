@@ -5,6 +5,7 @@ import Utils._
 import com.typesafe.config.Config
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.TimeUnit
+import org.slf4j.LoggerFactory
 
 /**
   * When a new layer/region dataset is added, the memory managing region cache will automatically
@@ -27,6 +28,8 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
                                             targetFreePct: Int = 40, //scalastyle:ignore
                                             iterationIntervalMs: Int = 100)  //scalastyle:ignore
   extends RegionCache[T](maxEntries) {
+  private val logger = LoggerFactory.getLogger(classOf[MemoryManagingRegionCache[_]])
+
   def this(config: Config) = this(config.getInt("max-entries"),
     config.getBoolean("enable-depressurize"),
     config.getInt("min-free-percentage"),
@@ -78,7 +81,7 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
           throw new RuntimeException("No more regions to uncache, out of memory")
         }
         val (key, _) = indexes.head
-        logger.info("Removing entry [{},{}] from cache...", key.resourceName, key.columnName)
+        logger.info("Removing entry [{},{}] from cache...", key.resourceName : Any, key.columnName)
         depressurizeEvents.time {
           cache.remove(key)
 
@@ -120,7 +123,7 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
           throw new RuntimeException("No more regions to un-cache, out of memory")
         } else {
           val key = keys.next()
-          logger.info("Removing cache entry [{},{}] from cache...", key.resourceName, key.columnName)
+          logger.info("Removing cache entry [{},{}] from cache...", key.resourceName : Any, key.columnName)
 
           depressurizeEvents.time {
             cache.remove(key)

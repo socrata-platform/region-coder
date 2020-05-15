@@ -5,19 +5,16 @@ name := "region-coder"
 scalaVersion := "2.10.7"
 
 val port = SettingKey[Int]("port")
-val Conf = config("container")
-val ScalatraVersion = "2.4.0.RC1"
-val JettyVersion = "8.1.8.v20121106"
-
-port in Conf := 2021
 
 fork in Test := true
 
 resolvers := Seq("Socrata Artifactory" at "https://repo.socrata.com/artifactory/libs-release/")
 
 libraryDependencies ++= Seq(
+  "ch.qos.logback"           % "logback-classic"           % "1.1.2",
   "com.socrata"              %% "socrata-http-client"      % "3.11.4",
   "com.socrata"              %% "socrata-http-server"      % "3.11.4",
+  "com.socrata"              %% "socrata-http-curator-broker" % "3.11.4",
   "com.socrata"              %% "socrata-http-jetty"       % "3.11.4",
   "com.socrata"              %% "socrata-thirdparty-utils" % "4.0.15",
   "com.socrata"              %% "socrata-curator-utils" % "1.1.2",
@@ -26,7 +23,6 @@ libraryDependencies ++= Seq(
     exclude("org.jdom", "jdom")
     exclude("javax.media", "jai_core"),
   "com.typesafe"              % "config"                    % "1.0.2",
-  "com.typesafe"             %% "scalalogging-slf4j"        % "1.1.0",
   "io.spray"                  % "spray-caching"             % "1.2.2",
   "nl.grons"                 %% "metrics-scala"             % "3.3.0",
   "org.apache.commons"        % "commons-io"                % "1.3.2",

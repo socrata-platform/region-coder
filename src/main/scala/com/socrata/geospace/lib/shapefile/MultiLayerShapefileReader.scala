@@ -9,6 +9,7 @@ import org.geoscript.projection._
 import org.geoscript.feature._
 import org.geoscript.projection.Projection
 import scala.util.{Success, Failure, Try}
+import org.slf4j.LoggerFactory
 
 /**
  * Shape file reader but for the case where we have multiple layers.
@@ -26,6 +27,7 @@ import scala.util.{Success, Failure, Try}
  */
 case class MultiLayerShapefileReader(projectionString: String = ShapeFileConstants.StandardProjection,
                                      forceLatLon: Boolean) extends ShapeReader {
+  private val logger = LoggerFactory.getLogger(classOf[MultiLayerShapefileReader])
 
   val projection = getTargetProjection(projectionString, forceLatLon).fold(throw _, x => x )
 
@@ -125,7 +127,7 @@ case class MultiLayerShapefileReader(projectionString: String = ShapeFileConstan
       case Success(c) =>
         Right(c)
       case Failure(e: Exception) =>
-        logger.warn("\"Reader failed to parse shape layer {}. -> {}", name, e.getMessage)
+        logger.warn("\"Reader failed to parse shape layer {}. -> {}", name: Any, e.getMessage)
         Left(InvalidShapefileSet("Reader failed to parse shape layer '%s'. -> %s".format(name, e.getMessage)))
       case Failure(e) =>
         throw e

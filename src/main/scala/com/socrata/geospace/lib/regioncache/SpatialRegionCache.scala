@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Envelope
 import org.geoscript.feature._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
+import org.slf4j.LoggerFactory
 
 /**
   * Caches indices of the region datasets for geo-region-coding in a SpatialIndex
@@ -19,6 +20,8 @@ import scala.util.Success
 class SpatialRegionCache(config: Config)
     extends MemoryManagingRegionCache[SpatialIndex[String]](config)
 {
+  private val logger = LoggerFactory.getLogger(classOf[SpatialRegionCache])
+
   val defaultRegionGeomName = "the_geom"
 
   val polygon = "polygon"
@@ -115,13 +118,13 @@ class SpatialRegionCache(config: Config)
 
   private def getGeomColumnFromSoda(sodaFountain: SodaFountainClient, resourceName: String): String = {
     geomColumnCache(resourceName) {
-      logger.info(s"Populating geometry column name for resource $resourceName from soda fountain..")
+      logger.info("Populating geometry column name for resource {} from soda fountain..", resourceName)
       SodaResponse.check(sodaFountain.schema(resourceName), StatusOK).map { jSchema =>
         val geoColumns = jSchema.dyn.columns.!.asInstanceOf[JObject].collect {
           case (k, v) if isAcceptedGeometry(v.dyn.datatype.!) => k}.toSeq
 
-        assert(geoColumns.length == 1, s"There should only be one column of " +
-                 s"type $polygon or type $multiPolygon in region " + resourceName)
+        require(geoColumns.length == 1, s"There should only be one column of " +
+                  s"type $polygon or type $multiPolygon in region " + resourceName)
         geoColumns.head
       }.get
     }

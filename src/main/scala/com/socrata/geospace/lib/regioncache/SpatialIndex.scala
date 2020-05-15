@@ -2,7 +2,6 @@ package com.socrata.geospace.lib.regioncache
 
 import com.socrata.geospace.lib.Utils._
 import com.socrata.geospace.lib.feature.FeatureExtensions._
-import com.typesafe.scalalogging.slf4j.Logging
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence
 import com.vividsolutions.jts.geom.prep.{PreparedGeometry, PreparedGeometryFactory}
 import com.vividsolutions.jts.geom.util.GeometryTransformer
@@ -12,6 +11,7 @@ import org.geoscript.layer._
 import org.geoscript.feature._
 import SpatialIndex._
 import scala.collection.JavaConverters._
+import org.slf4j.LoggerFactory
 
 /**
  * A spatial index based on JTS STRTree.  It is immutable, once built, it cannot be changed.
@@ -23,8 +23,10 @@ import scala.collection.JavaConverters._
  *
  * @param items A sequence of SpatialIndex.Entry's to index
  */
-class SpatialIndex[T](items: Seq[Entry[T]]) extends Logging {
-  logger.info(s"Creating new SpatialIndex with ${items.length} items")
+class SpatialIndex[T](items: Seq[Entry[T]]) {
+  private val logger = LoggerFactory.getLogger(classOf[SpatialIndex[_]])
+
+  logger.info("Creating new SpatialIndex with {} items", items.length)
 
   private val index = new STRtree() // use default node capacity
 
@@ -58,7 +60,7 @@ class SpatialIndex[T](items: Seq[Entry[T]]) extends Logging {
       index.insert(entry.envelope, entry)
       numCoords + entry.numCoordinates
     }
-    logger.info("Added {} items and {} coordinates to cache", items.size.toString, numCoords.toString)
+    logger.info("Added {} items and {} coordinates to cache", items.size, numCoords)
     logMemoryUsage("After populating SpatialIndex")
     numCoords
   }

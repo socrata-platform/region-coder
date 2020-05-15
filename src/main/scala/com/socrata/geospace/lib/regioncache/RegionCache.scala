@@ -5,12 +5,11 @@ import com.socrata.soda.external.SodaFountainClient
 import com.socrata.thirdparty.geojson.{FeatureCollectionJson, FeatureJson, GeoJson}
 import com.socrata.thirdparty.metrics.Metrics
 import com.typesafe.config.Config
-import com.typesafe.scalalogging.slf4j.Logging
 import com.rojoma.json.v3.util.{AutomaticJsonEncodeBuilder, NullForNone}
 import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory, Polygon}
 import com.vividsolutions.jts.io.WKTWriter
 import org.geoscript.feature._
-import scala.concurrent.Future
+import org.slf4j.LoggerFactory
 import scala.concurrent.ExecutionContext
 
 /**
@@ -43,7 +42,8 @@ object RegionCacheKey {
   * @tparam T                  Cache entry type
   */
 abstract class RegionCache[T](maxEntries: Int = 100)  //scalastyle:ignore
-  extends Logging with Metrics {
+  extends Metrics {
+  private val logger = LoggerFactory.getLogger(classOf[RegionCache[_]])
 
   // To be the same value as HttpStatus.SC_OK
   val StatusOK = 200
@@ -108,7 +108,7 @@ abstract class RegionCache[T](maxEntries: Int = 100)  //scalastyle:ignore
     */
   def getFromFeatures(key: RegionCacheKey, features: Seq[Feature]): T = {
     cache(key) {
-      logger.info(s"Populating cache entry for res [${key.resourceName}], col [${key.columnName}] from features")
+      logger.info("Populating cache entry for res [{}], col [{}] from features", key.resourceName: Any, key.columnName)
       prepForCaching()
       getEntryFromFeatures(features, key.columnName)
     }
@@ -147,8 +147,8 @@ abstract class RegionCache[T](maxEntries: Int = 100)  //scalastyle:ignore
     */
   def getFromSoda(sodaFountain: SodaFountainClient, key: RegionCacheKey, valueColumnName: String): T =
     cache(key) {
-      logger.info(s"Populating cache entry for resource [${key.resourceName}], column [] from soda fountain client")
-      key.envelope.foreach { env => logger.info(s"  for envelope $env") }
+      logger.info("Populating cache entry for resource [{}], column [] from soda fountain client", key.resourceName)
+      key.envelope.foreach { env => logger.info("  for envelope {}", env) }
 
       prepForCaching()
       // Ok, get a Try[JValue] for the response, then parse it using GeoJSON parser

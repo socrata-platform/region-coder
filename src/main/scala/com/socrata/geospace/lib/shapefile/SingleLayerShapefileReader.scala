@@ -15,10 +15,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem
 import org.slf4j.LoggerFactory
 import scala.util.{Failure, Success, Try}
 
+sealed abstract class SingleLayerShapefileReader
+
 /**
  * Validates and extracts shape and schema data from a shapefile directory.
  */
 object SingleLayerShapefileReader extends ShapeReader {
+  private val logger = LoggerFactory.getLogger(classOf[SingleLayerShapefileReader])
 
   /**
    * From the specified directory, returns the first file that matches the specified extension
