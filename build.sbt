@@ -42,7 +42,6 @@ libraryDependencies ++= Seq(
     exclude("javax.media", "jai_core"),
   "nl.grons"                 %% "metrics-scala"            % "3.3.0",
 
-  "com.github.tomakehurst"    % "wiremock"                      % "1.46"  % "test",
   "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
   "com.socrata"              %% "socrata-curator-test-utils"    % "1.1.2" % "test",
   "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test"

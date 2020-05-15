@@ -1,6 +1,5 @@
 package com.socrata.regioncoder
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import javax.servlet.http.{HttpServletResponse => HttpStatus}
 import com.rojoma.simplearm.v2._
 import com.rojoma.json.v3.interpolation._
