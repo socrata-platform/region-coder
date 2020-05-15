@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.{Envelope, Point}
 import org.geoscript.geometry.builder
 import scala.concurrent.{ExecutionContext, Future}
 import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, Callable, ExecutionException, LinkedBlockingQueue}
+import org.slf4j.MDC
 
 trait RegionCoder {
   def cacheConfig: Config
@@ -32,9 +33,11 @@ trait RegionCoder {
     try {
       // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
       // Now we have a Seq[Future[Envelope -> SpatialIndex]]
+      val callingThreadContext = MDC.getCopyOfContextMap
       val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
         executor.submit(new Callable[(Envelope, SpatialIndex[String])] {
                           def call() = {
+                            MDC.setContextMap(callingThreadContext)
                             partEnvelope -> spatialCache.getFromSoda(sodaFountain, resourceName, columnToReturn, Some(partEnvelope))
                           }
                         })
