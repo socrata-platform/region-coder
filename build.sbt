@@ -13,6 +13,8 @@ port in Conf := 2021
 
 fork in Test := true
 
+resolvers := Seq("Socrata Artifactory" at "https://repo.socrata.com/artifactory/libs-release/")
+
 libraryDependencies ++= Seq(
   "com.socrata"              %% "socrata-http-client"      % "3.11.4",
   "com.socrata"              %% "socrata-http-server"      % "3.11.4",
