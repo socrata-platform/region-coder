@@ -67,3 +67,6 @@ buildInfoOptions += BuildInfoOption.ToMap
 releaseProcess := releaseProcess.value.filterNot(_ == ReleaseTransformations.publishArtifacts)
 
 enablePlugins(sbtbuildinfo.BuildInfoPlugin)
+
+com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Test := {}
+com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Compile := {}
