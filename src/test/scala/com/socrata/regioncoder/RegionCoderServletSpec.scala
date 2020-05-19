@@ -2,6 +2,7 @@ package com.socrata.regioncoder
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
+import com.codahale.metrics.MetricRegistry
 import com.socrata.regioncoder.config.RegionCoderConfig
 import com.typesafe.config.ConfigFactory
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -24,6 +25,8 @@ object RegionCoderServletSpec {
 
 // scalastyle:off multiple.string.literals
 class RegionCoderServletSpec extends FunSuiteLike with RegionCoderMockResponses with Matchers {
+  val metricRegistry = new MetricRegistry
+
   val cfg = new RegionCoderConfig(ConfigFactory.parseString(RegionCoderServletSpec.config).
     withFallback(ConfigFactory.load().getConfig("com.socrata")))
 

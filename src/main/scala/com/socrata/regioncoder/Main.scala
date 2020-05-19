@@ -2,6 +2,7 @@ package com.socrata.regioncoder
 
 import java.util.concurrent.Executors
 import javax.servlet.http.HttpServletResponse
+import com.codahale.metrics.MetricRegistry
 import com.socrata.geospace.lib.errors.ServiceDiscoveryException
 import com.socrata.http.client.{HttpClient, HttpClientHttpClient, NoopLivenessChecker}
 import com.socrata.http.server.{HttpRequest, HttpResponse, SocrataServerJetty}
@@ -51,7 +52,7 @@ class Main(config: RegionCoderConfig) {
     } {
       val broker = new CuratorBroker(discovery, config.discovery.address, config.discovery.name, None)
 
-      val baseHandler = new RegionCoderServlet(config, sodaFountain)
+      val baseHandler = new RegionCoderServlet(config, sodaFountain, new MetricRegistry)
 
       val wrappedHandler = { (req: HttpRequest) =>
         MDC.clear()

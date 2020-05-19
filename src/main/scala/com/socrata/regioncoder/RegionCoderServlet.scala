@@ -4,6 +4,8 @@ import java.util.concurrent.ForkJoinPool
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
+import com.codahale.metrics.MetricRegistry
+import nl.grons.metrics.scala.InstrumentedBuilder
 import com.rojoma.json.v3.ast.{JValue, JObject, JString, JNull}
 import com.rojoma.json.v3.codec.JsonEncode
 import com.rojoma.json.v3.util.JsonUtil
@@ -18,8 +20,8 @@ import com.rojoma.json.v3.interpolation._
 import org.slf4j.LoggerFactory
 
 // scalastyle:off multiple.string.literals
-class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient)
-  extends RegionCoder {
+class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFountainClient, val metricRegistry: MetricRegistry)
+  extends RegionCoder with InstrumentedBuilder {
   val logger = LoggerFactory.getLogger(classOf[RegionCoderServlet])
 
   val concurrencyPerJob = rcConfig.threadPoolLimit
@@ -27,10 +29,10 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
   val partitionXsize = rcConfig.partitioning.sizeX
   val partitionYsize = rcConfig.partitioning.sizeY
 
-  def pointcodeTimer[A](f: => A): A = f //timer("pointcode") {f}.call()
-  def stringcodeTimer[A](f: => A): A = f //timer("stringcode") {f}.call()
-  def debugGetTimer[A](f: => A): A = f //timer("debug-get") {f}.call()
-  def debugClearTimer[A](f: => A): A = f //timer("debug-clear") {f}.call()
+  val pointcodeTimer = metrics.timer("pointcode")
+  val stringcodeTimer = metrics.timer("stringcode")
+  val debugGetTimer = metrics.timer("debug-get")
+  val debugClearTimer = metrics.timer("debug-clear")
 
   def badRequest(msg: String) =
     BadRequest ~> Content("text/plain", msg)
@@ -66,7 +68,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
         val columnToReturn = req.queryParameter("columnToReturn").getOrElse {
           return badRequest("Missing param 'columnToReturn'")
         }
-        pointcodeTimer {
+        pointcodeTimer.time {
           ok(regionCodeByPoint(
                resourceName,
                columnToReturn,
@@ -92,7 +94,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
         val columnToReturn = req.queryParameter("columnToReturn").getOrElse {
           return badRequest("Missing param 'columnToReturn'")
         }
-        pointcodeTimer {
+        pointcodeTimer.time {
           ok(regionCodeByPoint(
                resourceName,
                columnToReturn,
@@ -117,7 +119,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
         val columnToReturn = req.queryParameter("columnToReturn").getOrElse {
           return badRequest("Missing param 'columnToReturn'")
         }
-        stringcodeTimer {
+        stringcodeTimer.time {
           ok(regionCodeByString(resourceName, columnToMatch, columnToReturn, strings).map(encodeOrNull[Int]))
         }
       }
@@ -127,7 +129,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
     new SimpleResource {
       // DEBUGGING ROUTE : Returns a JSON blob with info about all currently cached regions, ordered by least-recently-used
       override val get = { (req: HttpRequest) =>
-        debugGetTimer {
+        debugGetTimer.time {
           ok(Map(
             "spatialCache" -> spatialCache.entriesByLeastRecentlyUsed().map {
               case (key, size) => json"""{ resource: $key, numCoordinates: $size }"""
@@ -139,7 +141,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
       }
 
       override val delete = { (req: HttpRequest) =>
-        debugClearTimer {
+        debugClearTimer.time {
           resetRegionState()
           logMemoryUsage("After clearing region caches")
           OK ~> Content("text/plain", "Done")

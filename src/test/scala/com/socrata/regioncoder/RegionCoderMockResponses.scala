@@ -6,10 +6,12 @@ import com.rojoma.json.v3.interpolation._
 import com.socrata.http.server.HttpRequest
 import com.socrata.regioncoder.config.RegionCoderConfig
 import org.scalatest.Matchers
+import com.codahale.metrics.MetricRegistry
 
 // scalastyle:off multiple.string.literals
 trait RegionCoderMockResponses extends Matchers {
   val cfg: RegionCoderConfig
+  val metricRegistry: MetricRegistry
 
   case class Mock(method: String, path: String, response: FakeHttpClient.Handler)
 
@@ -26,7 +28,7 @@ trait RegionCoderMockResponses extends Matchers {
         builder.register(mock.method, mock.path, mock.response)
       }.build
 
-      val regionCoderServlet = new RegionCoderServlet(cfg, new FakeSodaFountain(http, cfg).fakeSodaFountain)
+      val regionCoderServlet = new RegionCoderServlet(cfg, new FakeSodaFountain(http, cfg).fakeSodaFountain, metricRegistry)
       regionCoderServlet.handle(req)(resp)
       f(resp)
     }
