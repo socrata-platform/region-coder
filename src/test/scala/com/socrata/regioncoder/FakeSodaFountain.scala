@@ -7,10 +7,10 @@ import com.socrata.soda.external.SodaFountainClient
 import com.socrata.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest
 import com.socrata.regioncoder.config.RegionCoderConfig
 
-class FakeSodaFountain(httpClient: HttpClient, cfg: RegionCoderConfig) extends FakeDiscovery with Failable {
+class FakeSodaFountain(httpClient: HttpClient, cfg: RegionCoderConfig) extends Failable {
   val fakeSodaFountain = new SodaFountainClient(
     httpClient,
-    fakeDiscovery,
+    FakeDiscovery,
     cfg.sodaFountain.serviceName,
     cfg.curator.connectTimeout,
     cfg.sodaFountain.maxRetries,

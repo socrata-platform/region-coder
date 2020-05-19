@@ -4,8 +4,6 @@ name := "region-coder"
 
 scalaVersion := "2.10.7"
 
-val port = SettingKey[Int]("port")
-
 fork in Test := true
 
 resolvers := Seq("Socrata Artifactory" at "https://repo.socrata.com/artifactory/libs-release/")

@@ -22,13 +22,11 @@ trait RegionCoderMockResponses extends Matchers {
       }
       val resp = new RecordingHttpServletResponse
 
-      val http = new FakeHttpClient
+      val http = mocks.foldLeft(FakeHttpClient.builder) { (builder, mock) =>
+        builder.register(mock.method, mock.path, mock.response)
+      }.build
 
-      for(mock <- mocks) {
-        http.register(mock.method, mock.path, mock.response)
-      }
-
-      val regionCoderServlet = new RegionCoderServlet(cfg, new FakeSodaFountain(http.fakeHttpClient, cfg).fakeSodaFountain)
+      val regionCoderServlet = new RegionCoderServlet(cfg, new FakeSodaFountain(http, cfg).fakeSodaFountain)
       regionCoderServlet.handle(req)(resp)
       f(resp)
     }

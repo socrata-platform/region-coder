@@ -17,90 +17,90 @@ object FakeHttpClient {
                     content: String)
 
   type Handler = (Map[String, String], Option[String]) => Option[Result]
-}
 
-class FakeHttpClient {
-  import FakeHttpClient._
-
-  private def fail(s: String) = throw new Exception(s)
-
-  private val responses = new mutable.HashMap[String, mutable.Map[String, Seq[Handler]]]
-
-  def register(method: String, path: String, result: Handler) {
-    responses.get(path) match {
-      case None =>
-        responses.put(path, mutable.HashMap(method -> Vector(result)))
-      case Some(v) =>
-        v.get(method) match {
-          case None =>
-            v(method) = Vector(result)
-          case Some(handlers) =>
-            v(method) = handlers :+ result
-        }
+  class Builder private[FakeHttpClient] (responses: Map[String, Map[String, Vector[Handler]]]) {
+    def register(method: String, path: String, result: Handler): Builder = {
+      responses.get(path) match {
+        case None =>
+          new Builder(responses + (path -> Map(method -> Vector(result))))
+        case Some(v) =>
+          v.get(method) match {
+            case None =>
+              new Builder(responses + (path -> (v + (method -> Vector(result)))))
+            case Some(handlers) =>
+              new Builder(responses + (path -> (v + (method -> (handlers :+ result)))))
+          }
+      }
     }
+
+    def build = new FakeHttpClient(responses)
   }
 
-  val fakeHttpClient = new HttpClient {
-    def close(): Unit = fail("No close")
+  def builder() = new Builder(Map.empty)
+}
 
-    private def blankResponse(status: Int) =
-      new RawResponse with Closeable {
-        def close() {}
-        val responseInfo = new ResponseInfo {
-          val resultCode = status
-          def headers(name: String) = Array[String]()
-          val headerNames = Set.empty[String]
-        }
-        val body = new ByteArrayInputStream(Array[Byte]())
+class FakeHttpClient private (responses: Map[String, Map[String, Seq[FakeHttpClient.Handler]]]) extends HttpClient with Failable {
+  import FakeHttpClient._
+
+  override def close(): Unit = fail("No close")
+
+  private def blankResponse(status: Int) =
+    new RawResponse with Closeable {
+      def close() {}
+      val responseInfo = new ResponseInfo {
+        val resultCode = status
+        def headers(name: String) = Array[String]()
+        val headerNames = Set.empty[String]
       }
-
-    private def runHandlers(handlers: Seq[Handler], query: Map[String, String], body: Option[String]): Result = {
-      for {
-        handler <- handlers
-        result <- handler(query, body)
-      } return result
-
-      Result(status = HttpServletResponse.SC_BAD_REQUEST,
-             contentType = "text/plain",
-             content = "No handler found")
+      val body = new ByteArrayInputStream(Array[Byte]())
     }
 
-    def executeRawUnmanaged(req: SimpleHttpRequest): RawResponse with Closeable = {
-      val method = req.builder.method
-      val path = req.builder.path.map(URLEncoder.encode(_, "UTF-8")).mkString("/")
-      val query = req.builder.query.toMap
+  private def runHandlers(handlers: Seq[Handler], query: Map[String, String], body: Option[String]): Result = {
+    for {
+      handler <- handlers
+      result <- handler(query, body)
+    } return result
 
-      responses.get(path) match {
-        case Some(methods) =>
-          methods.get(method.get) match {
-            case Some(handlers) =>
-              new RawResponse with Closeable {
-                val result =
-                  req match {
-                    case _ : BodylessHttpRequest =>
-                      runHandlers(handlers, query, None)
-                    case json: JsonHttpRequest =>
-                      runHandlers(handlers, query, Some(JsonReader.fromEvents(json.contents).toString))
-                    case _ =>
-                      fail("Bad request")
-                  }
-                def close() {}
-                val responseInfo = new ResponseInfo {
-                  val resultCode = result.status
-                  def headers(name: String) = name match {
-                    case "Content-type" => Array(result.contentType)
-                    case _ => Array[String]()
-                  }
-                  val headerNames = Set("Content-type")
+    Result(status = HttpServletResponse.SC_BAD_REQUEST,
+           contentType = "text/plain",
+           content = "No handler found")
+  }
+
+  override def executeRawUnmanaged(req: SimpleHttpRequest): RawResponse with Closeable = {
+    val method = req.builder.method
+    val path = req.builder.path.map(URLEncoder.encode(_, "UTF-8")).mkString("/")
+    val query = req.builder.query.toMap
+
+    responses.get(path) match {
+      case Some(methods) =>
+        methods.get(method.get) match {
+          case Some(handlers) =>
+            new RawResponse with Closeable {
+              val result =
+                req match {
+                  case _ : BodylessHttpRequest =>
+                    runHandlers(handlers, query, None)
+                  case json: JsonHttpRequest =>
+                    runHandlers(handlers, query, Some(JsonReader.fromEvents(json.contents).toString))
+                  case _ =>
+                    fail("Bad request")
                 }
-                val body = new ByteArrayInputStream(result.content.getBytes(StandardCharsets.UTF_8))
+              def close() {}
+              val responseInfo = new ResponseInfo {
+                val resultCode = result.status
+                def headers(name: String) = name match {
+                  case "Content-type" => Array(result.contentType)
+                  case _ => Array[String]()
+                }
+                val headerNames = Set("Content-type")
               }
-            case None =>
-              blankResponse(HttpServletResponse.SC_METHOD_NOT_ALLOWED)
-          }
-        case None =>
-          blankResponse(HttpServletResponse.SC_NOT_FOUND)
-      }
+              val body = new ByteArrayInputStream(result.content.getBytes(StandardCharsets.UTF_8))
+            }
+          case None =>
+            blankResponse(HttpServletResponse.SC_METHOD_NOT_ALLOWED)
+        }
+      case None =>
+        blankResponse(HttpServletResponse.SC_NOT_FOUND)
     }
   }
 }
