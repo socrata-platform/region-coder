@@ -1,47 +1,97 @@
 package com.socrata.regioncoder
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import javax.servlet.http.{HttpServletResponse => HttpStatus}
+import com.rojoma.simplearm.v2._
+import com.rojoma.json.v3.interpolation._
+import com.socrata.http.server.HttpRequest
+import com.socrata.regioncoder.config.RegionCoderConfig
+import org.scalatest.Matchers
+import com.codahale.metrics.MetricRegistry
 
 // scalastyle:off multiple.string.literals
-trait RegionCoderMockResponses extends FakeSodaFountain {
-  protected def mockSodaRoute(resourceName: String, returnedBody: String): Unit = {
-    WireMock.stubFor(WireMock.get(WireMock.urlMatching(s"/resource/$resourceName??.*")).
-      willReturn(WireMock.aResponse()
-      .withStatus(HttpStatus.SC_OK)
-      .withHeader("Content-Type", "application/vnd.geo+json; charset=utf-8")
-      .withBody(returnedBody)))
-  }
+trait RegionCoderMockResponses extends Matchers {
+  val cfg: RegionCoderConfig
+  val metricRegistry: MetricRegistry
 
-  protected def mockSodaIntersects(
-    resourceName: String, x: String, y: String, returnedBody: String): Unit = {
-    WireMock.stubFor(WireMock.get(WireMock.urlMatching(s"/resource/$resourceName??.*POLYGON%20.*$x...$y.*")).
-      willReturn(WireMock.aResponse()
-      .withStatus(HttpStatus.SC_OK)
-      .withHeader("Content-Type", "application/vnd.geo+json; charset=utf-8")
-      .withBody(returnedBody)))
-  }
+  case class Mock(method: String, path: String, response: FakeHttpClient.Handler)
 
-  protected def mockSodaSchema(
-    resourceName: String, columnName: String = "the_geom"): Unit = {
-    val body = s"""{"columns":{"$columnName":{"datatype":"multipolygon"}}}"""
-    WireMock.stubFor(WireMock.get(WireMock.urlMatching(s"/dataset/$resourceName")).
-      willReturn(WireMock.aResponse()
-      .withStatus(HttpStatus.SC_OK)
-      .withHeader("Content-Type", "application/json; charset=utf-8")
-      .withBody(body)))
-  }
+  def withResp[T](url: String, content: String = null, method: String = null, mocks: Seq[Mock] = Nil)(f: RecordingHttpServletResponse => T): T = {
+    val rawReq = new FakeHttpServletRequest(url, Option(content), Option(method))
+    using(new ResourceScope) { rs =>
+      val req = new HttpRequest {
+        override val servletRequest = new HttpRequest.AugmentedHttpServletRequest(rawReq)
+        override val resourceScope = rs
+      }
+      val resp = new RecordingHttpServletResponse
 
-  protected def forceRegionRecache(): Unit = {
-    // Reset the cache to force region to load from soda fountain
-    delete("/v2/regions") {
-      status should equal (HttpStatus.SC_OK)
+      val http = mocks.foldLeft(FakeHttpClient.builder) { (builder, mock) =>
+        builder.register(mock.method, mock.path, mock.response)
+      }.build
+
+      val regionCoderServlet = new RegionCoderServlet(cfg, new FakeSodaFountain(http, cfg).fakeSodaFountain, metricRegistry)
+      regionCoderServlet.handle(req)(resp)
+      f(resp)
     }
+  }
 
-    // Verify the cache is empty
-    get("/v2/regions") {
-      body should equal ("""{"spatialCache":[],"stringCache":[]}""")
-    }
+  protected def mockSodaRoute(resourceName: String, returnedBody: String): Mock = {
+    Mock(
+      method = "GET",
+      path = s"resource/$resourceName",
+      response = { (_, _) =>
+        Some(FakeHttpClient.Result(
+               status = HttpStatus.SC_OK,
+               contentType = "application/vnd.geo+json; charset=utf-8",
+               content = returnedBody
+             ))
+      }
+    )
+  }
+
+  protected def mockSodaIntersects(resourceName: String, x: String, y: String, returnedBody: String): Mock = {
+    Mock(
+      method = "GET",
+      path = s"resource/$resourceName",
+      response = { (query, _) =>
+        if(query.get("$query").fold(false) { q => q.contains(s"$x $y") }) {
+          Some(FakeHttpClient.Result(
+                 status = HttpStatus.SC_OK,
+                 contentType = "application/vnd.geo+json; charset=utf-8",
+                 content = returnedBody
+               ))
+        } else {
+          None
+        }
+      }
+    )
+  }
+
+  protected def mockSodaEmptyIntersects(resourceName: String): Mock = {
+    Mock(
+      method = "GET",
+      path = s"resource/$resourceName",
+      response = { (_, _) =>
+        Some(FakeHttpClient.Result(
+               status = HttpStatus.SC_OK,
+               contentType = "application/vnd.geo+json; charset=utf-8",
+               content = emptyGeojson
+             ))
+      }
+    )
+  }
+
+  protected def mockSodaSchema(resourceName: String, columnName: String = "the_geom"): Mock = {
+    Mock(
+      method = "GET",
+      path = s"dataset/$resourceName",
+      response = { (_, _) =>
+        Some(FakeHttpClient.Result(
+          status = HttpStatus.SC_OK,
+          contentType = "application/json; charset=utf-8",
+          content = json"""{"columns":{$columnName:{"datatype":"multipolygon"}}}""".toString
+        ))
+      }
+    )
   }
 
   val feat1 = """{
@@ -71,6 +121,9 @@ trait RegionCoderMockResponses extends FakeSodaFountain {
   val geojson = """{"type":"FeatureCollection",
                   |"crs" : { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                   |"features": [""".stripMargin + Seq(feat1, feat2).mkString(",") + "]}"
+  val emptyGeojson = """{"type":"FeatureCollection",
+                  |"crs" : { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                  |"features": []}""".stripMargin
   val geojson2 = """{"type":"FeatureCollection",
                    |"crs" : { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
                    |"features": [""".stripMargin + Seq(feat3).mkString(",") + "]}"

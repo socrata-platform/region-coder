@@ -11,10 +11,10 @@ class RegionCoderConfig(config: Config) {
 
   val metrics = MetricsOptions(config.getConfig("region-coder.metrics"))
 
-  val gracefulShutdownMs = config.getMilliseconds(
-    "region-coder.graceful-shutdown-time").toInt
-  val shapePayloadTimeout = new FiniteDuration(config.getMilliseconds(
-    "region-coder.shape-payload-timeout"), TimeUnit.MILLISECONDS)
+  val gracefulShutdownMs = config.getDuration(
+    "region-coder.graceful-shutdown-time", TimeUnit.MILLISECONDS).toInt
+  val shapePayloadTimeout = new FiniteDuration(config.getDuration(
+    "region-coder.shape-payload-timeout", TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS)
 
   val cache = config.getConfig("region-coder.cache")
   val partitioning = new RegionPartitionConfig(config.getConfig("region-coder.partitioning"))

@@ -1,13 +1,17 @@
 package com.socrata.geospace.lib.feature
 
-import com.typesafe.scalalogging.slf4j.Logging
 import com.vividsolutions.jts.geom.{Coordinate, Geometry, MultiPolygon}
 import org.geoscript.feature.{RichFeature, Feature}
+import org.slf4j.LoggerFactory
+
+sealed abstract class FeatureValidator
 
 /** *
   * Validates whether a feature meets the criteria for ingestion into our system
   */
-object FeatureValidator extends Logging {
+object FeatureValidator {
+  private val logger = LoggerFactory.getLogger(classOf[FeatureValidator])
+
   sealed trait Result
   case object Valid extends Result
   sealed abstract class ValidationFailed(val msg: String) extends Result

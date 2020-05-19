@@ -10,16 +10,18 @@ import com.vividsolutions.jts.geom.Envelope
 import org.geoscript.feature._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success
-import spray.caching.LruCache
+import org.slf4j.LoggerFactory
 
 /**
   * Caches indices of the region datasets for geo-region-coding in a SpatialIndex
   * that can then be used to do spatial calculations (eg. shape.intersectsWith(shape).
   * @param config Cache configuration
   */
-class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionContext)
+class SpatialRegionCache(config: Config)
     extends MemoryManagingRegionCache[SpatialIndex[String]](config)
 {
+  private val logger = LoggerFactory.getLogger(classOf[SpatialRegionCache])
+
   val defaultRegionGeomName = "the_geom"
 
   val polygon = "polygon"
@@ -28,7 +30,7 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
   val jMultiPolygon = JString(multiPolygon)
 
   // Cache the geometry column name for each region dataset
-  val geomColumnCache = LruCache[String](config.getInt("max-entries"))
+  val geomColumnCache = LruCache[String, String](config.getInt("max-entries"))
 
   /**
     * Generates a SpatialIndex for the dataset given the set of features
@@ -69,10 +71,10 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @return Indices in descending order of size by # of coordinates
     */
   override def indicesBySizeDesc(): Seq[(RegionCacheKey, Int)] = {
-    cache.keys.toSeq.map(key => (key, cache.get(key).get.value)).
-      collect { case (key: RegionCacheKey, Some(Success(index))) => (key, index.numCoordinates) }.
-      sortBy(_._2).
-      reverse
+    cache.entries.
+      mapValues { case index => index.numCoordinates }.
+      toSeq.
+      sortBy(-_._2)
   }
 
   /**
@@ -80,9 +82,8 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @return cache entries in order of least-recently-used to most used
     */
   override def entriesByLeastRecentlyUsed(): Seq[(RegionCacheKey, Int)] = {
-    cache.ascendingKeys().map(key => (key, cache.get(key).get.value))
-      .collect { case (key: RegionCacheKey, Some(Success(index))) => (key, index.numCoordinates) }
-      .toSeq
+    cache.orderedEntries.
+      map { case (key, index) => (key, index.numCoordinates) }
   }
 
   /**
@@ -92,7 +93,7 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
     * @param features     a Seq of Features to use to create the cache entry if it doesn't exist
     * @return             A SpatialIndex future representing the cached dataset
     */
-  def getFromFeatures(resourceName: String, columnToReturn: String, features: Seq[Feature]): Future[SpatialIndex[String]] =
+  def getFromFeatures(resourceName: String, columnToReturn: String, features: Seq[Feature]): SpatialIndex[String] =
     getFromFeatures(RegionCacheKey(resourceName, defaultRegionGeomName, columnToReturn), features)
 
   /**
@@ -108,28 +109,24 @@ class SpatialRegionCache(config: Config)(implicit executionContext: ExecutionCon
   def getFromSoda(sodaFountain: SodaFountainClient,
                   resourceName: String,
                   valueColumnName: String,
-                  envelope: Option[Envelope] = None): Future[SpatialIndex[String]] =
-    for { geomColumn <- getGeomColumnFromSoda(sodaFountain, resourceName)
-          spatialIndex <- getFromSoda(sodaFountain,
-            RegionCacheKey(resourceName, geomColumn, valueColumnName, envelope),
-            valueColumnName) }
-      yield spatialIndex
+                  envelope: Option[Envelope] = None): SpatialIndex[String] = {
+    val geomColumn = getGeomColumnFromSoda(sodaFountain, resourceName)
+    getFromSoda(sodaFountain,
+                RegionCacheKey(resourceName, geomColumn, valueColumnName, envelope),
+                valueColumnName)
+  }
 
-  private def getGeomColumnFromSoda(sodaFountain: SodaFountainClient, resourceName: String): Future[String] = {
+  private def getGeomColumnFromSoda(sodaFountain: SodaFountainClient, resourceName: String): String = {
     geomColumnCache(resourceName) {
-      logger.info(s"Populating geometry column name for resource $resourceName from soda fountain..")
-      val tryColumn =
-        SodaResponse.check(sodaFountain.schema(resourceName), StatusOK).map { jSchema =>
-          val geoColumns = jSchema.dyn.columns.!.asInstanceOf[JObject].collect {
-            case (k, v) if isAcceptedGeometry(v.dyn.datatype.!) => k}.toSeq
+      logger.info("Populating geometry column name for resource {} from soda fountain..", resourceName)
+      SodaResponse.check(sodaFountain.schema(resourceName), StatusOK).map { jSchema =>
+        val geoColumns = jSchema.dyn.columns.!.asInstanceOf[JObject].collect {
+          case (k, v) if isAcceptedGeometry(v.dyn.datatype.!) => k}.toSeq
 
-
-          assert(geoColumns.length == 1, s"There should only be one column of " +
-            s"type $polygon or type $multiPolygon in region " + resourceName)
-          geoColumns.head
-        }
-      tryColumn.recover { case t: Throwable => throw t }
-      tryColumn.get
+        require(geoColumns.length == 1, s"There should only be one column of " +
+                  s"type $polygon or type $multiPolygon in region " + resourceName)
+        geoColumns.head
+      }.get
     }
   }
 

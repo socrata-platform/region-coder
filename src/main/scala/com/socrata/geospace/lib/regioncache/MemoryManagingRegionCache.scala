@@ -4,6 +4,8 @@ import com.socrata.geospace.lib.Utils
 import Utils._
 import com.typesafe.config.Config
 import scala.concurrent.ExecutionContext
+import java.util.concurrent.TimeUnit
+import org.slf4j.LoggerFactory
 
 /**
   * When a new layer/region dataset is added, the memory managing region cache will automatically
@@ -25,13 +27,14 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
                                             minFreePct: Int = 20, //scalastyle:ignore
                                             targetFreePct: Int = 40, //scalastyle:ignore
                                             iterationIntervalMs: Int = 100)  //scalastyle:ignore
-                                           (implicit executionContext: ExecutionContext)
   extends RegionCache[T](maxEntries) {
-  def this(config: Config)(implicit executionContext: ExecutionContext) = this(config.getInt("max-entries"),
+  private val logger = LoggerFactory.getLogger(classOf[MemoryManagingRegionCache[_]])
+
+  def this(config: Config) = this(config.getInt("max-entries"),
     config.getBoolean("enable-depressurize"),
     config.getInt("min-free-percentage"),
     config.getInt("target-free-percentage"),
-    config.getMilliseconds("iteration-interval").toInt)
+    config.getDuration("iteration-interval", TimeUnit.MILLISECONDS).toInt)
 
   val depressurizeEvents = metrics.timer("depressurize-events")
 
@@ -51,7 +54,7 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
     * @return keys in order of least recently used to most used
     */
   def regionKeysByLeastRecentlyUsed(): Iterator[RegionCacheKey] =
-    cache.ascendingKeys().asInstanceOf[Iterator[RegionCacheKey]]
+    cache.orderedEntries.iterator.map { case (k, _) => k }
 
 
   /**
@@ -78,7 +81,7 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
           throw new RuntimeException("No more regions to uncache, out of memory")
         }
         val (key, _) = indexes.head
-        logger.info("Removing entry [{},{}] from cache...", key.resourceName, key.columnName)
+        logger.info("Removing entry [{},{}] from cache...", key.resourceName : Any, key.columnName)
         depressurizeEvents.time {
           cache.remove(key)
 
@@ -120,7 +123,7 @@ abstract class MemoryManagingRegionCache[T](maxEntries: Int = 100, //scalastyle:
           throw new RuntimeException("No more regions to un-cache, out of memory")
         } else {
           val key = keys.next()
-          logger.info("Removing cache entry [{},{}] from cache...", key.resourceName, key.columnName)
+          logger.info("Removing cache entry [{},{}] from cache...", key.resourceName : Any, key.columnName)
 
           depressurizeEvents.time {
             cache.remove(key)

@@ -5,11 +5,11 @@ import com.socrata.geospace.lib.Utils
 import collection.JavaConverters._
 import com.rojoma.simplearm.util._
 import Utils._
-import com.typesafe.scalalogging.slf4j.Logging
 import java.io._
 import java.nio.file.Files
 import java.util.zip.ZipFile
 import org.apache.commons.io.{FileUtils, FilenameUtils, IOUtils}
+import org.slf4j.LoggerFactory
 
 import scala.annotation.tailrec
 
@@ -18,7 +18,9 @@ import scala.annotation.tailrec
   * Abstract class which is responsible for creating a temporary zip file from a source
   * then allows you to unarchive contents and return the directory with directory structure flattened.
   */
-abstract class AbstractZip(tmpDir: Option[File] = None) extends Closeable with Logging {
+abstract class AbstractZip(tmpDir: Option[File] = None) extends Closeable {
+  private val logger = LoggerFactory.getLogger(classOf[AbstractZip])
+
   require(hasContents, "Null or empty zip file")
 
   val shpPrefix = "shp_"

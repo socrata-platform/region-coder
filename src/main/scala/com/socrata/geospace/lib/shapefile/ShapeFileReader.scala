@@ -4,7 +4,6 @@ import java.io.File
 
 import com.socrata.geospace.lib.Utils._
 import com.socrata.geospace.lib.errors.InvalidShapefileSet
-import com.typesafe.scalalogging.slf4j.Logging
 import org.opengis.referencing.NoSuchAuthorityCodeException
 import org.geoscript.feature._
 import org.geoscript.layer._
@@ -15,8 +14,11 @@ import org.geotools.referencing.ReferencingFactoryFinder
 import org.opengis.referencing.crs.CoordinateReferenceSystem
 import org.geoscript.feature.schemaBuilder._
 import org.geotools.factory.Hints
+import org.slf4j.LoggerFactory
 
-trait ShapeReader extends Logging {
+trait ShapeReader {
+  private val logger = LoggerFactory.getLogger(classOf[ShapeReader])
+
   def read(file: File): AnyRef
   def validate(file: File): AnyRef
 
@@ -28,7 +30,7 @@ trait ShapeReader extends Logging {
     val shapeFile = Shapefile(file)
     try{
       logger.info("Reprojecting shapefile schema and {} features to {}",
-                  shapeFile.features.size.toString,
+                  shapeFile.features.size,
                   projection.getName)
       logMemoryUsage("Before reprojecting features...")
 
