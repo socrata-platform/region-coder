@@ -3,8 +3,6 @@ package com.socrata.geospace.lib.regioncache
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
 import org.apache.commons.collections4.map.LRUMap
 
 class LruCache[K, V](maxEntries: Int) {
