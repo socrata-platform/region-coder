@@ -29,7 +29,7 @@ trait RegionCoder {
     val geoPoints = points.map { case (x, y) => builder.Point(x, y) }
     val partitions = pointsToPartitions(geoPoints)
 
-    val executor = new ThreadPoolExecutor(1, concurrencyPerJob, 1, TimeUnit.SECONDS, new LinkedBlockingQueue)
+    val executor = new ThreadPoolExecutor(concurrencyPerJob, concurrencyPerJob, 1, TimeUnit.SECONDS, new LinkedBlockingQueue)
     try {
       // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
       // Now we have a Seq[Future[Envelope -> SpatialIndex]]
