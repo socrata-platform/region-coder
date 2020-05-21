@@ -9,7 +9,7 @@ import org.apache.commons.collections4.map.LRUMap
 
 class LruCache[K, V](maxEntries: Int) {
   private class Waiter {
-    var count = 1
+    var count = 0
   }
 
   private val cache = new LRUMap[K, V](maxEntries)
