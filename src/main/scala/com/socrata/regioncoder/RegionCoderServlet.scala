@@ -149,6 +149,22 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
       }
     }
 
+  def stats(version: String) =
+    new SimpleResource {
+      // DEBUGGING ROUTE : Returns a JSON blob with info about cache hit rates
+      override val get = { (req: HttpRequest) =>
+        ok(json"""{
+             spatialCache: {
+               geomColumnCache: ${spatialCache.geomColumnCacheStats},
+               regionCache: ${spatialCache.cacheStats}
+             },
+             stringCache: {
+               regionCache: ${stringCache.cacheStats}
+             }
+          }""")
+      }
+    }
+
 
   val routeContext = new RouteContext[HttpRequest, HttpResponse]
   import routeContext._
@@ -160,7 +176,8 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
       Route("/v2/regions/?/pointcode", pointcodeV2 _),
       Route("/v3/regions/?/pointcode", pointcodeV3 _),
       Route("/v2/regions/?/stringcode", stringcode _),
-      Route("/?/regions", regions _))
+      Route("/?/regions", regions _),
+      Route("/?/stats", stats _))
 
   def handle(req: HttpRequest): HttpResponse = {
     routes(req.requestPath) match {

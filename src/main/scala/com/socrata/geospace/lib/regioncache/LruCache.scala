@@ -2,20 +2,37 @@ package com.socrata.geospace.lib.regioncache
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.commons.collections4.map.LRUMap
+import com.rojoma.json.v3.util.AutomaticJsonEncodeBuilder
 
-class LruCache[K, V](maxEntries: Int) {
+object LruCache {
+  def apply[K, V](maxEntries: Int) = new LruCache[K, V](maxEntries)
+
+  case class Stats(hits: Int, partialHits: Int, misses: Int)
+  object Stats {
+    implicit val jEncode = AutomaticJsonEncodeBuilder[Stats]
+  }
+
   private class Waiter {
     var count = 0
   }
+}
+
+class LruCache[K, V](maxEntries: Int) {
+  import LruCache._
 
   private val cache = new LRUMap[K, V](maxEntries)
   private val waiters = new mutable.HashMap[K, Waiter]
+  private val cacheHits = new AtomicInteger(0)
+  private val cachePartialHits = new AtomicInteger(0)
+  private val cacheMisses = new AtomicInteger(0)
 
   def apply(key: K)(f: => V): V = {
     Option(cache.synchronized { cache.get(key) }) match {
       case Some(value) =>
+        cacheHits.getAndIncrement()
         value
 
       case None =>
@@ -34,6 +51,7 @@ class LruCache[K, V](maxEntries: Int) {
             Option(cache.synchronized { cache.get(key) }) match {
               case Some(value) =>
                 // someone else got there first
+                cachePartialHits.getAndIncrement()
                 value
 
               case None =>
@@ -41,6 +59,7 @@ class LruCache[K, V](maxEntries: Int) {
                 // compute the value to cache.
                 val value: V = f
                 cache.synchronized { cache.put(key, value) }
+                cacheMisses.getAndIncrement()
                 value
             }
           }
@@ -52,6 +71,9 @@ class LruCache[K, V](maxEntries: Int) {
         }
     }
   }
+
+  def stats: Stats =
+    Stats(cacheHits.get, cachePartialHits.get, cacheMisses.get)
 
   def remove(key: K): Unit = {
     cache.synchronized { cache.remove(key) }
@@ -76,8 +98,4 @@ class LruCache[K, V](maxEntries: Int) {
       cache.mapIterator.asScala.map { key => key -> cache.get(key, false) }.toVector
     }
   }
-}
-
-object LruCache {
-  def apply[K, V](maxEntries: Int) = new LruCache[K, V](maxEntries)
 }
