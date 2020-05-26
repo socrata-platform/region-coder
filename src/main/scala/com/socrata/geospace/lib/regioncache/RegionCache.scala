@@ -53,6 +53,7 @@ abstract class RegionCache[T](maxEntries: Int = 100)  //scalastyle:ignore
   def this(config: Config)(implicit executionContext: ExecutionContext) = this(config.getInt("max-entries"))
 
   protected val cache = LruCache[RegionCacheKey, T](maxEntries)
+  def cacheStats = cache.stats
 
   logger.info("Creating RegionCache with {} entries", maxEntries.toString())
 

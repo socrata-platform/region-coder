@@ -31,6 +31,7 @@ class SpatialRegionCache(config: Config)
 
   // Cache the geometry column name for each region dataset
   val geomColumnCache = LruCache[String, String](config.getInt("max-entries"))
+  def geomColumnCacheStats = geomColumnCache.stats
 
   /**
     * Generates a SpatialIndex for the dataset given the set of features
