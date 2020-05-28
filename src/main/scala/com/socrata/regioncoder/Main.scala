@@ -1,5 +1,6 @@
 package com.socrata.regioncoder
 
+import scala.concurrent.duration._
 import java.util.concurrent.Executors
 import javax.servlet.http.HttpServletResponse
 import com.codahale.metrics.MetricRegistry
@@ -56,6 +57,8 @@ class Main(config: RegionCoderConfig) {
 
       val wrappedHandler = { (req: HttpRequest) =>
         MDC.clear()
+        val jobIdHeader = "X-Socrata-JobId"
+        req.header(jobIdHeader).foreach(MDC.put(jobIdHeader, _))
         MDC.put(RequestId.ReqIdHeader, req.requestId)
 
         log.info("{} - {}{}", req.method, req.requestPathStr, req.queryStr.fold("")("?" + _))
