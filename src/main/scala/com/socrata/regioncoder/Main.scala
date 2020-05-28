@@ -1,5 +1,6 @@
 package com.socrata.regioncoder
 
+import scala.concurrent.duration._
 import java.util.concurrent.Executors
 import javax.servlet.http.HttpServletResponse
 import com.codahale.metrics.MetricRegistry
@@ -56,8 +57,11 @@ class Main(config: RegionCoderConfig) {
 
       val wrappedHandler = { (req: HttpRequest) =>
         MDC.clear()
+        val jobIdHeader = "X-Socrata-JobId"
+        req.header(jobIdHeader).foreach(MDC.put(jobIdHeader, _))
         MDC.put(RequestId.ReqIdHeader, req.requestId)
 
+        val start = System.nanoTime()
         log.info("{} - {}{}", req.method, req.requestPathStr, req.queryStr.fold("")("?" + _))
 
         val result =
@@ -80,7 +84,8 @@ class Main(config: RegionCoderConfig) {
                 log.warn("Caught exception but the result was already committed", e)
               }
           } finally {
-            log.info("Status - " + resp.getStatus())
+            val duration = (System.nanoTime() - start).nanoseconds
+            log.info("Status - {} ({})", resp.getStatus(), "%.3fs".format(duration.toMillis / 1000.0))
           }
         }
       }

@@ -52,10 +52,10 @@ trait RegionCoder {
       // which will be done when all the indices/partitions have been fetched
       val envToIndex = indexFutures.flatMap(_.get).toMap
 
-      (0 until geoPoints.length).map { i =>
+      (geoPoints, partitions).zipped.map { (point, maybePartition) =>
         for {
-          partition <- partitions(i)
-          entry <- envToIndex(partition).firstContains(geoPoints(i))
+          partition <- maybePartition
+          entry <- envToIndex(partition).firstContains(point)
         } yield {
           convert(entry.item)
         }
