@@ -5,8 +5,7 @@ import com.socrata.soda.external.SodaFountainClient
 import com.typesafe.config.Config
 import com.vividsolutions.jts.geom.{Envelope, Point}
 import org.geoscript.geometry.builder
-import scala.concurrent.{ExecutionContext, Future}
-import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, Callable, ExecutionException, LinkedBlockingQueue}
+import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, Callable, ExecutionException, LinkedBlockingQueue, Future, CompletableFuture}
 import org.slf4j.MDC
 
 trait RegionCoder {
@@ -34,20 +33,32 @@ trait RegionCoder {
       // Map unique partitions to SpatialIndices, fetching them in parallel using Futures
       // Now we have a Seq[Future[Envelope -> SpatialIndex]]
       val callingThreadContext = Option(MDC.getCopyOfContextMap)
-      val indexFutures = partitions.toSet.map { partEnvelope: Envelope =>
-        executor.submit(new Callable[(Envelope, SpatialIndex[String])] {
-                          def call() = {
-                            callingThreadContext.foreach(MDC.setContextMap)
-                            partEnvelope -> spatialCache.getFromSoda(sodaFountain, resourceName, columnToReturn, Some(partEnvelope))
-                          }
-                        })
-      }
-      // Turn sequence of futures into one Map[Envelope -> SpatialIndex]
+      type IndexResult = Option[(Envelope, SpatialIndex[String])]
+      val indexFutures: Seq[Future[IndexResult]] =
+        partitions.distinct.map { maybePartEnvelope: Option[Envelope] =>
+          maybePartEnvelope match {
+            case Some(partEnvelope) =>
+              executor.submit(new Callable[IndexResult] {
+                                def call() = {
+                                  callingThreadContext.foreach(MDC.setContextMap)
+                                  Some(partEnvelope -> spatialCache.getFromSoda(sodaFountain, resourceName, columnToReturn, Some(partEnvelope)))
+                                }
+                              })
+            case None =>
+              CompletableFuture.completedFuture[IndexResult](None)
+          }
+        }
+      // Turn the sequence of futures into one Map[Envelope -> SpatialIndex]
       // which will be done when all the indices/partitions have been fetched
-      val envToIndex = indexFutures.map(_.get).toMap
+      val envToIndex = indexFutures.flatMap(_.get).toMap
 
       (0 until geoPoints.length).map { i =>
-        envToIndex(partitions(i)).firstContains(geoPoints(i)).map { entry => convert(entry.item) }
+        for {
+          partition <- partitions(i)
+          entry <- envToIndex(partition).firstContains(geoPoints(i))
+        } yield {
+          convert(entry.item)
+        }
       }
     } catch {
       case e: ExecutionException =>
@@ -71,14 +82,24 @@ trait RegionCoder {
     stringCache.reset()
   }
 
+  def isReasonable(point: Point) = {
+    // probably 360 is over-generous, but I can see 180 going wrong
+    // sometimes so we'll allow the full circle.
+    point.getX.abs <= 360 && point.getY.abs <= 90
+  }
+
   // Maps each point to its enclosing partition.  The world is divided into evenly spaced partitions
   // according to partitionXYsize.
-  protected def pointsToPartitions(points: Seq[Point]): Seq[Envelope] = {
+  protected def pointsToPartitions(points: Seq[Point]): Seq[Option[Envelope]] = {
     points.map { point =>
-      val partitionX = Math.floor(point.getX / partitionXsize) * partitionXsize
-      val partitionY = Math.floor(point.getY / partitionYsize) * partitionYsize
-      new Envelope(partitionX, partitionX + partitionXsize,
-        partitionY, partitionY + partitionYsize)
+      if(isReasonable(point)) {
+        val partitionX = Math.floor(point.getX / partitionXsize) * partitionXsize
+        val partitionY = Math.floor(point.getY / partitionYsize) * partitionYsize
+        Some(new Envelope(partitionX, partitionX + partitionXsize,
+                          partitionY, partitionY + partitionYsize))
+      } else {
+        None
+      }
     }
   }
 }

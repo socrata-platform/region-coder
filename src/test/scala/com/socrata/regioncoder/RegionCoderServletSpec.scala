@@ -66,6 +66,26 @@ class RegionCoderServletSpec extends FunSuiteLike with RegionCoderMockResponses 
     }
   }
 
+  test("v2 - unreasonable points don't even bother making calls to soda-fountain") {
+    withResp("/v2/regions/triangles/pointcode?columnToReturn=user_defined_key",
+             content =  "[[172584, 42144266], [1152246, 42184240], [164423, 42142814]]",
+             mocks = Nil) { resp =>
+      resp.status should equal (HttpServletResponse.SC_OK)
+      resp.json should equal (json"""[null, null, null]""")
+    }
+  }
+
+  test("v2 - mixed reasonable/unreasonable points fill in the nulls appropriately") {
+    withResp("/v2/regions/triangles/pointcode?columnToReturn=user_defined_key",
+             content =  "[[0.1, 0.5], [1100.1, 13.9], [0.5, 0.1]]",
+             mocks = Seq(mockSodaSchema("triangles"),
+                         mockSodaIntersects("triangles.geojson", "0", "0", geojson),
+                         mockSodaIntersects("triangles.geojson", "8", "12", geojson2))) { resp =>
+      resp.status should equal (HttpServletResponse.SC_OK)
+      resp.json should equal (json"""[101,null,102]""")
+    }
+  }
+
   test("v2 - string coding service") {
     mockSodaRoute("triangles.geojson", geojson)
 
