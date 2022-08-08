@@ -8,7 +8,8 @@ externalResolvers ++= Seq(
   Resolver.url("Socrata Ivy Lib Releases", url("https://repo.socrata.com/artifactory/ivy-libs-release"))(Resolver.ivyStylePatterns)
 )
 
-addSbtPlugin("org.scalatra.sbt" % "scalatra-sbt"    % "0.4.0")
-addSbtPlugin("com.earldouglas"  % "xsbt-web-plugin" % "1.1.0")
-addSbtPlugin("com.socrata" % "socrata-sbt-plugins" % "1.6.8")
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.4.0")
+addSbtPlugin("org.scalatra.sbt" % "sbt-scalatra"    % "1.0.4")
+addSbtPlugin("com.earldouglas"  % "xsbt-web-plugin" % "4.2.4")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
+addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
+addSbtPlugin("com.github.sbt" % "sbt-release" % "1.1.0")

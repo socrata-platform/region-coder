@@ -1,5 +1,8 @@
 package com.socrata.regioncoder
 
+import org.scalatest._
+import org.scalatest.matchers._
+
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import com.codahale.metrics.MetricRegistry
@@ -9,8 +12,6 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.socrata.http.server.HttpRequest
 import com.rojoma.simplearm.v2._
 import com.rojoma.json.v3.interpolation._
-import org.scalatest.FunSuiteLike
-import org.scalatest.Matchers
 import com.socrata.http.common.AuxiliaryData
 import java.io.Closeable
 import com.socrata.geospace.lib.client.SodaResponse
@@ -24,7 +25,7 @@ object RegionCoderServletSpec {
 }
 
 // scalastyle:off multiple.string.literals
-class RegionCoderServletSpec extends FunSuiteLike with RegionCoderMockResponses with Matchers {
+class RegionCoderServletSpec extends FunSuite with RegionCoderMockResponses with Matchers {
   val metricRegistry = new MetricRegistry
 
   val cfg = new RegionCoderConfig(ConfigFactory.parseString(RegionCoderServletSpec.config).

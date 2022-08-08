@@ -1,10 +1,9 @@
 package com.socrata.geospace.lib.regioncache
 
-import org.scalatest.{FunSpec, OptionValues, ShouldMatchers}
+import org.scalatest.{FunSpec, OptionValues, Matchers}
 import org.geoscript.geometry.builder
-import org.scalatest.{FunSpec, ShouldMatchers}
 
-class SpatialIndexSpec extends FunSpec with ShouldMatchers with OptionValues {
+class SpatialIndexSpec extends FunSpec with Matchers with OptionValues {
   import SpatialIndex.{Entry, GeoEntry}
 
   val poly1 = builder.Polygon(Seq((10, 10), (10, 20), (20, 20), (20, 10), (10, 10)), Nil)

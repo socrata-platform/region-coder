@@ -2,14 +2,14 @@ package com.socrata.geospace.lib.regioncache
 
 import org.geoscript.geometry.{builder => build}
 import org.geoscript.layer._
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.{FunSpec, Matchers}
 
 import scala.concurrent.Future
 
 /**
  * Tests that SpatialIndex can concurrently geocode/match polygons correctly, using Futures
  */
-class SpatialIndexConcurrencySpec extends FunSpec with ShouldMatchers {
+class SpatialIndexConcurrencySpec extends FunSpec with Matchers {
 
   val layer = Shapefile("data/chicago_wards/Wards.shp")
   val bbox = layer.getBounds
