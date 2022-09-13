@@ -1,10 +1,14 @@
+import scala.sys.process.Process
+
 organization := "com.socrata"
 
 name := "region-coder"
 
 scalaVersion := "2.10.7"
 
-fork in Test := true
+Test / fork := true
+
+Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest)
 
 resolvers := Seq("Socrata Artifactory" at "https://repo.socrata.com/artifactory/libs-release/")
 
@@ -38,7 +42,8 @@ libraryDependencies ++= Seq(
 
   "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
   "com.socrata"              %% "socrata-curator-test-utils"    % "1.1.2" % "test",
-  "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test"
+  "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test",
+  "org.scalatest"            %% "scalatest"                     % "3.0.8" % "test"
 )
 
 def gitSha = Process(Seq("git", "describe", "--always", "--dirty", "--long", "--abbrev=10")).!!.stripLineEnd
@@ -61,6 +66,3 @@ buildInfoOptions += BuildInfoOption.ToMap
 releaseProcess := releaseProcess.value.filterNot(_ == ReleaseTransformations.publishArtifacts)
 
 enablePlugins(sbtbuildinfo.BuildInfoPlugin)
-
-com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Test := {}
-com.socrata.sbtplugins.StylePlugin.StyleKeys.styleCheck in Compile := {}
