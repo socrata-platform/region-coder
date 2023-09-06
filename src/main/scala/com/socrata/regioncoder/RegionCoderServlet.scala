@@ -56,6 +56,15 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
       case None => JNull
     }
 
+  private def intify(s: String): Int = {
+    try {
+      s.toInt
+    } catch {
+      case _ : NumberFormatException =>
+        BigDecimal(s).toIntExact
+    }
+  }
+
   def pointcodeV2(resourceName: String) =
     new SimpleResource {
       override val post = doPointcode _
@@ -73,7 +82,7 @@ class RegionCoderServlet(rcConfig: RegionCoderConfig, val sodaFountain: SodaFoun
                resourceName,
                columnToReturn,
                points,
-               (featureId: String) => featureId.toInt
+               (featureId: String) => intify(featureId)
              ).map(encodeOrNull[Int]))
         }
       }
