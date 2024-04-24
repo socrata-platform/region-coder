@@ -28,7 +28,7 @@ pipeline {
   }
   environment {
     WEBHOOK_ID = 'WEBHOOK_IQ'
-    SCALA_VERSION = '2.12'
+    SCALA_VERSION = '2.10'
   }
   stages {
     stage('Build') {
