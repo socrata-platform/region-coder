@@ -1,5 +1,7 @@
 FROM socrata/java8-focal
 
+RUN apt-get -y update && apt-get -y install jq
+
 # Service specific settings.
 ENV SERVER_NAME region-coder
 ENV SERVICE_PORT 2021
