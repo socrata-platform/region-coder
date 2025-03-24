@@ -1,10 +1,16 @@
-@Library('socrata-pipeline-library@0.0.1') _
+@Library('socrata-pipeline-library@3.0.0') _
 
-commonServicePipeline(
+commonPipeline(
   defaultBuildWorker: 'build-worker',
-  deploymentEcosystem: 'marathon-mesos',
+  jobName: 'region-coder',
   language: 'scala',
   languageVersion: '2.10',
-  projectName: 'region-coder',
+  projects: [
+    [
+      name: 'region-coder',
+      deploymentEcosystem: 'marathon-mesos',
+      type: 'service'
+    ]
+  ],
   teamsChannelWebhookId: 'WORKFLOW_IQ',
 )
