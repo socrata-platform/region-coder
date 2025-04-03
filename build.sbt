@@ -66,3 +66,5 @@ buildInfoOptions += BuildInfoOption.ToMap
 releaseProcess := releaseProcess.value.filterNot(_ == ReleaseTransformations.publishArtifacts)
 
 enablePlugins(sbtbuildinfo.BuildInfoPlugin)
+
+assembly/assemblyJarName := s"${name.value}-assembly.jar"

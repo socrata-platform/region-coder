@@ -1,15 +1,22 @@
-@Library('socrata-pipeline-library@3.0.0') _
+@Library('socrata-pipeline-library@generalize-sbt-to-work-for-multiple-projects') _
 
 commonPipeline(
   defaultBuildWorker: 'build-worker',
   jobName: 'region-coder',
   language: 'scala',
-  languageVersion: '2.10',
+  languageOptions: [
+    crossCompile: true,
+    isMultiProjectRepository: false
+  ],
   projects: [
     [
       name: 'region-coder',
       deploymentEcosystem: 'marathon-mesos',
-      type: 'service'
+      type: 'service',
+      compiled: true,
+      paths: [
+        dockerBuildContext: 'docker'
+      ]
     ]
   ],
   teamsChannelWebhookId: 'WORKFLOW_IQ',
