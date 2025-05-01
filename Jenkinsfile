@@ -1,14 +1,16 @@
-@Library('socrata-pipeline-library@3.0.0') _
+@Library('socrata-pipeline-library@6.0.0') _
 
 commonPipeline(
-  defaultBuildWorker: 'build-worker',
   jobName: 'region-coder',
   language: 'scala',
-  languageVersion: '2.10',
   projects: [
     [
       name: 'region-coder',
+      compiled: true,
       deploymentEcosystem: 'marathon-mesos',
+      paths: [
+        dockerBuildContext: 'docker',
+      ],
       type: 'service'
     ]
   ],
