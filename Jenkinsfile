@@ -1,4 +1,4 @@
-@Library('socrata-pipeline-library@6.0.0') _
+@Library('socrata-pipeline-library@7.0.0') _
 
 commonPipeline(
   jobName: 'region-coder',
