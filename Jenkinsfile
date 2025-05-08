@@ -1,4 +1,4 @@
-@Library('socrata-pipeline-library@6.0.0') _
+@Library('socrata-pipeline-library@sarahs/EN-77895/checkout-before-checking-release-tags') _
 
 commonPipeline(
   jobName: 'region-coder',
