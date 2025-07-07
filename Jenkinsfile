@@ -1,4 +1,4 @@
-@Library('socrata-pipeline-library@7.0.0') _
+@Library('socrata-pipeline-library@9.0.0') _
 
 commonPipeline(
   jobName: 'region-coder',
@@ -14,5 +14,5 @@ commonPipeline(
       type: 'service'
     ]
   ],
-  teamsChannelWebhookId: 'WORKFLOW_IQ',
+  teamsChannelWebhookId: 'WORKFLOW_EGRESS_AUTOMATION',
 )
