@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
     exclude("org.scala-lang", "scala-swing")
     exclude("com.lowagie", "itext")
     exclude("javax.media", "jai_core"),
-  "nl.grons"                 %% "metrics-scala"            % "3.3.0",
+  "nl.grons"                 %% "metrics4-scala"            % "3.3.0",
 
   "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
   "com.socrata"              %% "socrata-curator-test-utils"    % "1.1.2" % "test",
