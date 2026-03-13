@@ -1,4 +1,4 @@
-FROM socrata/java8-jammy
+FROM socrata/runit-java-jammy:25
 
 RUN apt-get -y update && apt-get -y install jq
 
