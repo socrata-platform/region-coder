@@ -20,8 +20,8 @@ libraryDependencies ++= Seq(
   "com.socrata"              %% "socrata-http-jetty"          % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-thirdparty-utils"    % "5.1.0",
   "com.socrata"              %% "socrata-curator-utils"       % "1.2.0",
-  "com.socrata"              %% "soda-fountain-external"      % "2.1.51", // TODO doesn't have a 2.12 version published in artifactory
-  "com.socrata"              %% "soql-types"                  % "2.11.4" // TODO only has _2.11/2.11.4
+  "com.socrata"              %% "soda-fountain-external"      % "2.1.51", // TODO doesn't have a 2.12 version published in artifactory. check back after 3/17 release build
+  "com.socrata"              %% "soql-types"                  % "4.4.2"
     exclude("org.jdom", "jdom")
     exclude("javax.media", "jai_core"),
   "com.typesafe"              % "config"                    % "1.4.3",
