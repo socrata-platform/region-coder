@@ -32,7 +32,7 @@ libraryDependencies ++= Seq(
   "org.apache.curator"        % "curator-x-discovery"       % "2.4.2"
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j", "log4j"),
-  "org.velvia"               %% "geoscript"                 % "0.8.3" // TODO doesn't have a 2.12 version published in artifactory
+  "com.socrata" %% "geoscript" % "0.8.2"
     exclude("org.geotools", "gt-xml")
     exclude("org.geotools", "gt-render")
     exclude("org.scala-lang", "scala-swing")
