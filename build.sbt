@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "com.socrata"              %% "socrata-http-jetty"          % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-thirdparty-utils"    % "5.1.0",
   "com.socrata"              %% "socrata-curator-utils"       % "1.2.0",
-  "com.socrata"              %% "soda-fountain-external"      % "2.1.51", // TODO doesn't have a 2.12 version published in artifactory. check back after 3/17 release build
+  "com.socrata"              %% "sodafountainexternal"        % "4.0.18",
   "com.socrata"              %% "soql-types"                  % "4.4.2"
     exclude("org.jdom", "jdom")
     exclude("javax.media", "jai_core"),
@@ -40,8 +40,8 @@ libraryDependencies ++= Seq(
     exclude("javax.media", "jai_core"),
   "nl.grons"                 %% "metrics4-scala"            % "3.3.0",
 
-  "com.socrata"              %% "socrata-thirdparty-test-utils" % "4.0.15" % "test",
-  "com.socrata"              %% "socrata-curator-test-utils"    % "1.1.2" % "test",
+  "com.socrata"              %% "socrata-thirdparty-test-utils" % "5.1.0" % "test",
+  "com.socrata"              %% "socrata-curator-test-utils"    % "1.2.0" % "test",
   "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test",
   "org.scalatest"            %% "scalatest"                     % "3.2.19" % "test"
 )
