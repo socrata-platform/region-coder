@@ -13,7 +13,7 @@ Test / testOptions += Tests.Argument(TestFrameworks.ScalaTest)
 resolvers := Seq("Socrata Artifactory" at "https://repo.socrata.com/artifactory/libs-release/")
 
 libraryDependencies ++= Seq(
-  "ch.qos.logback"           % "logback-classic"              % "1.1.2",
+  "ch.qos.logback"           % "logback-classic"              % "1.5.18",
   "com.socrata"              %% "socrata-http-client"         % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-server"         % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-curator-broker" % "3.16.5-jdk11",
