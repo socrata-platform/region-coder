@@ -32,18 +32,20 @@ libraryDependencies ++= Seq(
   "org.apache.curator"        % "curator-x-discovery"       % "2.4.2"
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j", "log4j"),
+
   "com.socrata" %% "geoscript" % "0.8.2"
     exclude("org.geotools", "gt-xml")
     exclude("org.geotools", "gt-render")
     exclude("org.scala-lang", "scala-swing")
     exclude("com.lowagie", "itext")
     exclude("javax.media", "jai_core"),
-  "nl.grons"                 %% "metrics4-scala"            % "3.3.0",
+  "com.rojoma" %% "rojoma-json" % "2.4.3"
+    exclude("org.scala-lang.modules", "scala-xml_2.12"),
 
   "com.socrata"              %% "socrata-thirdparty-test-utils" % "5.1.0" % "test",
   "com.socrata"              %% "socrata-curator-test-utils"    % "1.2.0" % "test",
   "org.apache.curator"        % "curator-test"                  % "2.4.2" % "test",
-  "org.scalatest"            %% "scalatest"                     % "3.2.19" % "test"
+  "org.scalatest"            %% "scalatest"                     % "3.2.19" % "test",
 )
 
 def gitSha = Process(Seq("git", "describe", "--always", "--dirty", "--long", "--abbrev=10")).!!.stripLineEnd
@@ -68,3 +70,11 @@ releaseProcess := releaseProcess.value.filterNot(_ == ReleaseTransformations.pub
 enablePlugins(sbtbuildinfo.BuildInfoPlugin)
 
 assembly/assemblyJarName := s"${name.value}-assembly.jar"
+
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
+  case "module-info.class"                                        => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (assembly / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
