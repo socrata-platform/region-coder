@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j", "log4j"),
 
-  "com.socrata" %% "geoscript" % "0.8.2"
+  "com.socrata" %% "geoscript" % "0.8.4"
     exclude("org.geotools", "gt-xml")
     exclude("org.geotools", "gt-render")
     exclude("org.scala-lang", "scala-swing")
