@@ -1,8 +1,8 @@
 package com.socrata.regioncoder
 
 import java.util.{Collection, Locale}
-import javax.servlet.http._
-import javax.servlet.{ServletOutputStream, WriteListener}
+import jakarta.servlet.http._
+import jakarta.servlet.{ServletOutputStream, WriteListener}
 import java.io.{ByteArrayOutputStream, PrintWriter}
 import java.nio.charset.StandardCharsets
 import com.rojoma.json.v3.io.JsonReader

@@ -1,11 +1,11 @@
 package com.socrata.regioncoder
 
-import javax.servlet.http.{HttpServletResponse => HttpStatus}
+import jakarta.servlet.http.{HttpServletResponse => HttpStatus}
 import com.rojoma.simplearm.v2._
 import com.rojoma.json.v3.interpolation._
 import com.socrata.http.server.HttpRequest
 import com.socrata.regioncoder.config.RegionCoderConfig
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
 import com.codahale.metrics.MetricRegistry
 
 // scalastyle:off multiple.string.literals
@@ -21,6 +21,7 @@ trait RegionCoderMockResponses extends Matchers {
       val req = new HttpRequest {
         override val servletRequest = new HttpRequest.AugmentedHttpServletRequest(rawReq)
         override val resourceScope = rs
+        override val concurrencyTracker = None
       }
       val resp = new RecordingHttpServletResponse
 

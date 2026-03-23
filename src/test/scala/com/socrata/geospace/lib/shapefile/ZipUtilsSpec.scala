@@ -5,9 +5,10 @@ import java.nio.file.{Files, Paths}
 
 import com.rojoma.simplearm.util._
 import org.apache.commons.codec.binary.Base64
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class ZipUtilsSpec extends FunSuite with Matchers  {
+class ZipUtilsSpec extends AnyFunSuite with Matchers  {
   // Base 64 string of a zip file with the following contents:
   // - file1.txt
   // - sub/file2.txt

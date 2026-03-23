@@ -1,10 +1,11 @@
 package com.socrata.geospace.lib.regioncache
 
 import org.geoscript.geometry.builder
-import org.scalatest.{Matchers, FunSuiteLike}
+import org.scalatest.funsuite.AnyFunSuiteLike
+import org.scalatest.matchers.should.Matchers
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class SpatialRegionCacheSpec extends FunSuiteLike with Matchers with RegionCacheSpecHelper {
+class SpatialRegionCacheSpec extends AnyFunSuiteLike with Matchers with RegionCacheSpecHelper {
   val cache = new SpatialRegionCache(testConfig)
 
   test("getEntryFromFeatureJson - indexed on _feature_id") {

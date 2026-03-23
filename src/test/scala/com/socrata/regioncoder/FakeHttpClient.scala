@@ -1,13 +1,12 @@
 package com.socrata.regioncoder
 
 import scala.collection.mutable
-import org.scalatest.FunSuiteLike
 
 import com.socrata.http.client.{HttpClient, SimpleHttpRequest, ResponseInfo, BodylessHttpRequest, JsonHttpRequest}
 import java.io.{ByteArrayInputStream, Closeable}
 import java.nio.charset.StandardCharsets
 import java.net.URLEncoder
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 
 import com.rojoma.json.v3.io.JsonReader
 
@@ -46,7 +45,7 @@ class FakeHttpClient private (responses: Map[String, Map[String, Seq[FakeHttpCli
 
   private def blankResponse(status: Int) =
     new RawResponse with Closeable {
-      def close() {}
+      def close(): Unit = {}
       val responseInfo = new ResponseInfo {
         val resultCode = status
         def headers(name: String) = Array[String]()
@@ -85,7 +84,7 @@ class FakeHttpClient private (responses: Map[String, Map[String, Seq[FakeHttpCli
                   case _ =>
                     fail("Bad request")
                 }
-              def close() {}
+              def close(): Unit = {}
               val responseInfo = new ResponseInfo {
                 val resultCode = result.status
                 def headers(name: String) = name match {
