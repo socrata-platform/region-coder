@@ -2,16 +2,21 @@ package com.socrata.geospace.lib.regioncache
 
 import com.socrata.geospace.lib.Utils._
 import com.socrata.geospace.lib.feature.FeatureExtensions._
-import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence
-import com.vividsolutions.jts.geom.prep.{PreparedGeometry, PreparedGeometryFactory}
-import com.vividsolutions.jts.geom.util.GeometryTransformer
-import com.vividsolutions.jts.geom.{Envelope, Geometry, CoordinateSequence}
-import com.vividsolutions.jts.index.strtree.STRtree
-import org.geoscript.layer._
 import org.geoscript.feature._
-import SpatialIndex._
-import scala.collection.JavaConverters._
+import org.geoscript.layer._
+import org.locationtech.jts.geom.CoordinateSequence
+import org.locationtech.jts.geom.Envelope
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.impl.PackedCoordinateSequence
+import org.locationtech.jts.geom.prep.PreparedGeometry
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory
+import org.locationtech.jts.geom.util.GeometryTransformer
+import org.locationtech.jts.index.strtree.STRtree
 import org.slf4j.LoggerFactory
+
+import scala.collection.JavaConverters._
+
+import SpatialIndex._
 
 /**
  * A spatial index based on JTS STRTree.  It is immutable, once built, it cannot be changed.

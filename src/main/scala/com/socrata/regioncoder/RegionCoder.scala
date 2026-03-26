@@ -3,7 +3,7 @@ package com.socrata.regioncoder
 import com.socrata.geospace.lib.regioncache._
 import com.socrata.soda.external.SodaFountainClient
 import com.typesafe.config.Config
-import com.vividsolutions.jts.geom.{Envelope, Point}
+import org.locationtech.jts.geom.{Envelope, Point}
 import org.geoscript.geometry.builder
 import java.util.concurrent.{ThreadPoolExecutor, TimeUnit, Callable, ExecutionException, LinkedBlockingQueue, Future, CompletableFuture}
 import org.slf4j.MDC

@@ -1,11 +1,12 @@
 package com.socrata.geospace.lib.shapefile
 
-import java.io.{File, InputStream}
-
-import com.vividsolutions.jts.geom.MultiPolygon
+import org.locationtech.jts.geom.MultiPolygon
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
+
+import java.io.File
+import java.io.InputStream
 
 class MultiLayerShapeFileReaderTest extends AnyFunSuite with Matchers with BeforeAndAfterEach {
 

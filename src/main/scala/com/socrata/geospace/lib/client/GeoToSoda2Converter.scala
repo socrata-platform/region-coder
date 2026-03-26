@@ -3,7 +3,7 @@ package com.socrata.geospace.lib.client
 import com.rojoma.json.v3.ast._
 import com.socrata.geospace.lib.feature.FeatureExtensions._
 import com.socrata.thirdparty.geojson.JtsCodecs
-import com.vividsolutions.jts.geom.{Geometry, MultiPolygon}
+import org.locationtech.jts.geom.{Geometry, MultiPolygon}
 import org.geoscript.feature._
 import org.opengis.feature.`type`.PropertyDescriptor
 

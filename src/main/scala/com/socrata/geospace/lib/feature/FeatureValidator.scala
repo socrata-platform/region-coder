@@ -1,7 +1,10 @@
 package com.socrata.geospace.lib.feature
 
-import com.vividsolutions.jts.geom.{Coordinate, Geometry, MultiPolygon}
-import org.geoscript.feature.{RichFeature, Feature}
+import org.geoscript.feature.Feature
+import org.geoscript.feature.RichFeature
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.MultiPolygon
 import org.slf4j.LoggerFactory
 
 sealed abstract class FeatureValidator

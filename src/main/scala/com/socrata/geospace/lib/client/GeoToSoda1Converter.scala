@@ -1,11 +1,12 @@
 package com.socrata.geospace.lib.client
 
-import com.rojoma.json.v3.conversions._
 import com.rojoma.json.v3.ast._
+import com.rojoma.json.v3.conversions._
 import com.socrata.geospace.lib.feature.FeatureExtensions._
 import com.socrata.thirdparty.geojson.JtsCodecs
-import com.vividsolutions.jts.geom.{Geometry, MultiPolygon}
 import org.geoscript.feature._
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.geom.MultiPolygon
 import org.opengis.feature.`type`.PropertyDescriptor
 
 import scala.collection.JavaConverters._

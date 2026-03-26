@@ -1,16 +1,21 @@
 package com.socrata.geospace.lib.regioncache
 
-import com.rojoma.json.v3.ast.{JValue, JString, JObject}
-import com.socrata.geospace.lib.client.{GeoToSoda2Converter, SodaResponse}
+import com.rojoma.json.v3.ast.JObject
+import com.rojoma.json.v3.ast.JString
+import com.rojoma.json.v3.ast.JValue
+import com.socrata.geospace.lib.client.GeoToSoda2Converter
+import com.socrata.geospace.lib.client.SodaResponse
 import com.socrata.geospace.lib.regioncache.SpatialIndex.GeoEntry
 import com.socrata.soda.external.SodaFountainClient
 import com.socrata.thirdparty.geojson.FeatureJson
 import com.typesafe.config.Config
-import com.vividsolutions.jts.geom.Envelope
 import org.geoscript.feature._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
+import org.locationtech.jts.geom.Envelope
 import org.slf4j.LoggerFactory
+
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.util.Success
 
 /**
   * Caches indices of the region datasets for geo-region-coding in a SpatialIndex

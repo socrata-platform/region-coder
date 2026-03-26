@@ -1,14 +1,18 @@
 package com.socrata.geospace.lib.shapefile
 
-import java.io.{File, IOException}
-import java.nio.file.{Files, Path, Paths}
-
 import com.socrata.geospace.lib.errors.InvalidShapefileSet
-import com.vividsolutions.jts.geom.Point
-import org.apache.commons.io.{FileUtils, FilenameUtils}
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
+import org.locationtech.jts.geom.Point
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class ShapefileReaderSpec extends AnyFunSuite with Matchers with BeforeAndAfterEach {
   private var tmp: Path = _

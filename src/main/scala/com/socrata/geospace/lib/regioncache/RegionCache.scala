@@ -1,15 +1,22 @@
 package com.socrata.geospace.lib.regioncache
 
+import com.rojoma.json.v3.util.AutomaticJsonEncodeBuilder
+import com.rojoma.json.v3.util.NullForNone
 import com.socrata.geospace.lib.client.SodaResponse
 import com.socrata.soda.external.SodaFountainClient
-import com.socrata.thirdparty.geojson.{FeatureCollectionJson, FeatureJson, GeoJson}
+import com.socrata.thirdparty.geojson.FeatureCollectionJson
+import com.socrata.thirdparty.geojson.FeatureJson
+import com.socrata.thirdparty.geojson.GeoJson
 import com.socrata.thirdparty.metrics.Metrics
 import com.typesafe.config.Config
-import com.rojoma.json.v3.util.{AutomaticJsonEncodeBuilder, NullForNone}
-import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory, Polygon}
-import com.vividsolutions.jts.io.WKTWriter
 import org.geoscript.feature._
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.Envelope
+import org.locationtech.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.Polygon
+import org.locationtech.jts.io.WKTWriter
 import org.slf4j.LoggerFactory
+
 import scala.concurrent.ExecutionContext
 
 /**
