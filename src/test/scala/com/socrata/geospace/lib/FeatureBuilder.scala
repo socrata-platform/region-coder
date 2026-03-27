@@ -9,7 +9,7 @@ trait FeatureBuilder {
   protected def featureType: SimpleFeatureType
   protected lazy val featureBuilder = new SimpleFeatureBuilder(featureType)
 
-  lazy val nullFeature = featureBuilder.buildFeature(null, Array(null, "a nonexistent shape"))
+  lazy val nullFeature = featureBuilder.buildFeature(null, null, "a nonexistent shape")
 }
 
 object MultiPolygonBuilder extends FeatureBuilder {
@@ -17,12 +17,12 @@ object MultiPolygonBuilder extends FeatureBuilder {
 
   def buildSimple(ring: Seq[(Double, Double)], name: String = "whatever"): SimpleFeature = {
     val mp = builder.multi(Seq(builder.Polygon(ring)))
-    featureBuilder.buildFeature(null, Array(mp, name))
+    featureBuilder.buildFeature(null, mp, name)
   }
 
   def buildMulti(polys: Seq[Seq[(Double, Double)]], name: String = "whatever"): SimpleFeature = {
     val mp = builder.multi(polys.map(builder.Polygon(_)))
-    featureBuilder.buildFeature(null, Array(mp, name))
+    featureBuilder.buildFeature(null, mp, name)
   }
 }
 
@@ -31,6 +31,6 @@ object PointBuilder extends FeatureBuilder {
 
   def buildPointFeature(x: Double, y: Double, name: String = "whatever"): SimpleFeature = {
     val point = builder.Point(x, y)
-    featureBuilder.buildFeature(null, Array(point, name))
+    featureBuilder.buildFeature(null, point, name)
   }
 }
