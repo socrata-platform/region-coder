@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "com.socrata"              %% "socrata-http-server"         % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-curator-broker" % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-jetty"          % "3.16.5-jdk11",
-  "com.socrata"              %% "socrata-thirdparty-utils"    % "5.1.0",
+  "com.socrata"              %% "socrata-thirdparty-utils"    % "5.1.1-loctechtjs",
   "com.socrata"              %% "socrata-curator-utils"       % "1.2.0",
   "com.socrata"              %% "sodafountainexternal"        % "4.0.18",
   "com.socrata"              %% "soql-types"                  % "4.4.2"
@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
     exclude("org.slf4j", "slf4j-log4j12")
     exclude("log4j", "log4j"),
 
-  "com.socrata" %% "geoscript" % "0.8.5-GEO12"
+  "com.socrata" %% "geoscript" % "0.8.5-court"
     exclude("org.geotools", "gt-xml")
     exclude("org.geotools", "gt-render")
     exclude("org.scala-lang", "scala-swing")
@@ -74,6 +74,8 @@ assembly/assemblyJarName := s"${name.value}-assembly.jar"
 assembly / assemblyMergeStrategy := {
   case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
   case "module-info.class"                                        => MergeStrategy.discard
+    case "plugin.properties"                                        => MergeStrategy.discard
+    case "plugin.xml"                                               => MergeStrategy.discard
   case x =>
     val oldStrategy = (assembly / assemblyMergeStrategy).value
     oldStrategy(x)
