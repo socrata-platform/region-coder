@@ -1,19 +1,19 @@
 package com.socrata.geospace.lib.shapefile
 
+import java.io.File
+
 import com.socrata.geospace.lib.Utils._
 import com.socrata.geospace.lib.errors.InvalidShapefileSet
-import org.geoscript.feature._
-import org.geoscript.feature.schemaBuilder._
-import org.geoscript.layer._
-import org.geoscript.projection.Projection
-import org.geoscript.projection._
-import org.geotools.referencing.ReferencingFactoryFinder
-import org.geotools.util.factory.Hints
 import org.opengis.referencing.NoSuchAuthorityCodeException
+import org.geoscript.feature._
+import org.geoscript.layer._
+import org.geoscript.projection._
+import org.geotools.util.factory.Hints
+import org.geoscript.projection.Projection
+import org.geotools.referencing.ReferencingFactoryFinder
 import org.opengis.referencing.crs.CoordinateReferenceSystem
+import org.geoscript.feature.schemaBuilder._
 import org.slf4j.LoggerFactory
-
-import java.io.File
 
 trait ShapeReader {
   private val logger = LoggerFactory.getLogger(classOf[ShapeReader])

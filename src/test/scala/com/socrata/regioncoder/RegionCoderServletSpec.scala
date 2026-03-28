@@ -1,5 +1,8 @@
 package com.socrata.regioncoder
 
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
+
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
 import com.codahale.metrics.MetricRegistry
@@ -12,8 +15,6 @@ import com.rojoma.json.v3.interpolation._
 import com.socrata.http.common.AuxiliaryData
 import java.io.Closeable
 import com.socrata.geospace.lib.client.SodaResponse
-import org.scalatest.funsuite.AnyFunSuite
-import org.scalatest.matchers.should.Matchers
 
 object RegionCoderServletSpec {
   val config = """

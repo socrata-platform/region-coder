@@ -1,5 +1,6 @@
 package com.socrata.geospace.lib.client
 
+import com.rojoma.json.v3.conversions._
 import com.rojoma.json.v3.ast._
 import com.socrata.geospace.lib.feature.FeatureExtensions._
 import com.socrata.thirdparty.geojson.JtsCodecs

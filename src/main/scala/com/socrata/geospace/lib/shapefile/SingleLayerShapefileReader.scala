@@ -1,23 +1,19 @@
 package com.socrata.geospace.lib.shapefile
 
 import com.socrata.geospace.lib.Utils
+import Utils._
 import com.socrata.geospace.lib.errors.InvalidShapefileSet
+import java.io.File
 import org.apache.commons.io.FilenameUtils
 import org.geoscript.feature._
 import org.geoscript.feature.schemaBuilder._
 import org.geoscript.layer._
 import org.geoscript.projection._
-import org.geotools.referencing.ReferencingFactoryFinder
 import org.geotools.util.factory.Hints
+import org.geotools.referencing.ReferencingFactoryFinder
 import org.opengis.referencing.crs.CoordinateReferenceSystem
 import org.slf4j.LoggerFactory
-
-import java.io.File
-import scala.util.Failure
-import scala.util.Success
-import scala.util.Try
-
-import Utils._
+import scala.util.{Failure, Success, Try}
 
 sealed abstract class SingleLayerShapefileReader
 
