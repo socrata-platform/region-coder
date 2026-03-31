@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "com.socrata"              %% "socrata-http-server"         % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-curator-broker" % "3.16.5-jdk11",
   "com.socrata"              %% "socrata-http-jetty"          % "3.16.5-jdk11",
-  "com.socrata"              %% "socrata-thirdparty-utils"    % "5.1.1-loctechtjs", // TODO update to actual version when published
+  "com.socrata"              %% "socrata-thirdparty-utils"    % "5.3.0",
   "com.socrata"              %% "socrata-curator-utils"       % "1.2.0",
   "com.socrata"              %% "sodafountainexternal"        % "4.0.18",
   "com.socrata"              %% "soql-types"                  % "4.4.2"
