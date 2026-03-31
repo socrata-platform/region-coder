@@ -1,12 +1,13 @@
 package com.socrata.geospace.lib.feature
 
 import com.socrata.geospace.lib.feature.FeatureValidator._
-import com.vividsolutions.jts.geom.Coordinate
+import org.locationtech.jts.geom.Coordinate
 import org.geoscript.geometry.builder
-import org.scalatest.{FunSuite, Matchers}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 import com.socrata.geospace.lib.{PointBuilder, MultiPolygonBuilder}
 
-class FeatureValidatorTest extends FunSuite with Matchers {
+class FeatureValidatorTest extends AnyFunSuite with Matchers {
   test("Feature geometry is null") {
     FeatureValidator.validate(MultiPolygonBuilder.nullFeature, 5) should be (DefaultGeometryMissing)
   }

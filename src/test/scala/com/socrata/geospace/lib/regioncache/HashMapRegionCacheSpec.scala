@@ -2,10 +2,11 @@ package com.socrata.geospace.lib.regioncache
 
 import org.geoscript.feature._
 import org.geoscript.layer._
-import org.scalatest.{FunSuiteLike, Matchers}
+import org.scalatest.funsuite.AnyFunSuiteLike
+import org.scalatest.matchers.should.Matchers
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class HashMapRegionCacheSpec extends FunSuiteLike with Matchers with RegionCacheSpecHelper {
+class HashMapRegionCacheSpec extends AnyFunSuiteLike with Matchers with RegionCacheSpecHelper {
   val hashMapCache = new HashMapRegionCache(testConfig)
 
   test("getEntryFromFeatures - some rows have key value missing") {

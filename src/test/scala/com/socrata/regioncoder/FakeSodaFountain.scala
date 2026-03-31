@@ -1,7 +1,5 @@
 package com.socrata.regioncoder
 
-import org.scalatest.FunSuiteLike
-
 import com.socrata.http.client.HttpClient
 import com.socrata.soda.external.SodaFountainClient
 import com.socrata.curator.ServerProvider.RetryOnAllExceptionsDuringInitialRequest

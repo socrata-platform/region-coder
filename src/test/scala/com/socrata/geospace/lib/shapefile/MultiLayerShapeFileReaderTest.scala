@@ -2,10 +2,13 @@ package com.socrata.geospace.lib.shapefile
 
 import java.io.{File, InputStream}
 
-import com.vividsolutions.jts.geom.MultiPolygon
-import org.scalatest.{BeforeAndAfterEach, FunSuite, MustMatchers}
+import org.locationtech.jts.geom.MultiPolygon
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.must.Matchers
 
-class MultiLayerShapeFileReaderTest extends FunSuite with MustMatchers with BeforeAndAfterEach {
+
+class MultiLayerShapeFileReaderTest extends AnyFunSuite with Matchers with BeforeAndAfterEach {
 
   // reader creation.
   private val projection = ShapeFileConstants.StandardProjection
@@ -19,7 +22,7 @@ class MultiLayerShapeFileReaderTest extends FunSuite with MustMatchers with Befo
 
   def getIns(path: String): InputStream = classOf[MultiLayerShapeFileReaderTest].getResourceAsStream(path)
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     val goodIns = getIns("/com.socrata.geo.worker/data/good_sample.zip")
     val badIns = getIns("/com.socrata.geo.worker/data/bad_sample.zip")
 
@@ -27,7 +30,7 @@ class MultiLayerShapeFileReaderTest extends FunSuite with MustMatchers with Befo
     badZip = new ZipFromStream(badIns,None)
   }
 
-  override def afterEach(){
+  override def afterEach(): Unit = {
     goodZip.close()
     badZip.close()
 

@@ -1,9 +1,11 @@
 package com.socrata.geospace.lib.regioncache
 
-import org.scalatest.{FunSpec, OptionValues, Matchers}
+import org.scalatest.OptionValues
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.matchers.should.Matchers
 import org.geoscript.geometry.builder
 
-class SpatialIndexSpec extends FunSpec with Matchers with OptionValues {
+class SpatialIndexSpec extends AnyFunSpec with Matchers with OptionValues {
   import SpatialIndex.{Entry, GeoEntry}
 
   val poly1 = builder.Polygon(Seq((10, 10), (10, 20), (20, 20), (20, 10), (10, 10)), Nil)
@@ -44,7 +46,7 @@ class SpatialIndexSpec extends FunSpec with Matchers with OptionValues {
     it("should find one of two geometries a point is in") {
       val matches = index.whatContains(builder.Point(18, 11))
       matches should have length (2)
-      matches.toSet.map { x: Entry[String] => x.item } should equal (Set("1", "2"))
+      matches.map(_.item).toSet should equal (Set("1", "2"))
     }
   }
 }

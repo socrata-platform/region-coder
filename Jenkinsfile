@@ -3,6 +3,7 @@
 commonPipeline(
     jobName: 'region-coder',
     language: 'scala',
+    defaultBuildWorker: 'worker-java-multi-pg13',
     projects: [
         [
             name: 'region-coder',

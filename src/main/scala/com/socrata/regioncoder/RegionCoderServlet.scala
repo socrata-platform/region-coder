@@ -5,7 +5,7 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 import com.codahale.metrics.MetricRegistry
-import nl.grons.metrics.scala.InstrumentedBuilder
+import nl.grons.metrics4.scala.InstrumentedBuilder
 import com.rojoma.json.v3.ast.{JValue, JObject, JString, JNull}
 import com.rojoma.json.v3.codec.JsonEncode
 import com.rojoma.json.v3.util.JsonUtil

@@ -9,7 +9,7 @@ import org.geoscript.feature._
 import org.geoscript.feature.schemaBuilder._
 import org.geoscript.layer._
 import org.geoscript.projection._
-import org.geotools.factory.Hints
+import org.geotools.util.factory.Hints
 import org.geotools.referencing.ReferencingFactoryFinder
 import org.opengis.referencing.crs.CoordinateReferenceSystem
 import org.slf4j.LoggerFactory

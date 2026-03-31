@@ -1,6 +1,6 @@
 package com.socrata.geospace.lib.feature
 
-import com.vividsolutions.jts.geom.{Coordinate, Geometry, MultiPolygon}
+import org.locationtech.jts.geom.{Coordinate, Geometry, MultiPolygon}
 import org.geoscript.feature.{RichFeature, Feature}
 import org.slf4j.LoggerFactory
 

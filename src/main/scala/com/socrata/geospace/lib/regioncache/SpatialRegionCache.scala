@@ -6,7 +6,7 @@ import com.socrata.geospace.lib.regioncache.SpatialIndex.GeoEntry
 import com.socrata.soda.external.SodaFountainClient
 import com.socrata.thirdparty.geojson.FeatureJson
 import com.typesafe.config.Config
-import com.vividsolutions.jts.geom.Envelope
+import org.locationtech.jts.geom.Envelope
 import org.geoscript.feature._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Success

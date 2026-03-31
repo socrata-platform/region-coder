@@ -2,7 +2,7 @@ package com.socrata.regioncoder
 
 import scala.concurrent.duration._
 import java.util.concurrent.Executors
-import javax.servlet.http.HttpServletResponse
+import jakarta.servlet.http.HttpServletResponse
 import com.codahale.metrics.MetricRegistry
 import com.socrata.geospace.lib.errors.ServiceDiscoveryException
 import com.socrata.http.client.{HttpClient, HttpClientHttpClient, NoopLivenessChecker}
@@ -31,7 +31,7 @@ class Main(config: RegionCoderConfig) {
     InternalServerError ~> Content("text/plain", s"${e.getClass.getSimpleName}: ${e.getMessage}\n${e.getStackTraceString}\n")
   }
 
-  def runServer() {
+  def runServer(): Unit = {
     for {
       httpExecutor <- managed(Executors.newCachedThreadPool())
       httpClient <- managed(new HttpClientHttpClient(

@@ -5,8 +5,8 @@ import java.nio.charset.StandardCharsets
 import java.{util => ju}
 import java.security.Principal
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse, HttpUpgradeHandler, Part, HttpSession, Cookie}
-import javax.servlet._
+import jakarta.servlet.http.{Cookie, HttpServletRequest, HttpServletResponse, HttpSession, HttpUpgradeHandler, Part}
+import jakarta.servlet._
 
 class FakeHttpServletRequest(url: String, content: Option[String], method: Option[String]) extends HttpServletRequest with Failable {
   val headers = Map("X-Socrata-RequestId" -> "It's a FAAAAKE")

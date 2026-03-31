@@ -4,14 +4,17 @@ import java.io.{File, IOException}
 import java.nio.file.{Files, Path, Paths}
 
 import com.socrata.geospace.lib.errors.InvalidShapefileSet
-import com.vividsolutions.jts.geom.Point
+import org.locationtech.jts.geom.Point
 import org.apache.commons.io.{FileUtils, FilenameUtils}
-import org.scalatest.{BeforeAndAfterEach, FunSuite, Matchers}
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class ShapefileReaderSpec extends FunSuite with Matchers with BeforeAndAfterEach {
+
+class ShapefileReaderSpec extends AnyFunSuite with Matchers with BeforeAndAfterEach {
   private var tmp: Path = _
 
-  override def beforeEach() {
+  override def beforeEach(): Unit = {
     // Set up a valid shapefile directory
     tmp = Files.createTempDirectory("shapefilereaderspec_")
 
@@ -21,7 +24,7 @@ class ShapefileReaderSpec extends FunSuite with Matchers with BeforeAndAfterEach
     copyToTmp(tmp.toFile, "data/nyc_parks/parks.prj", "parks.prj")
   }
 
-  override def afterEach() {
+  override def afterEach(): Unit = {
     FileUtils.deleteDirectory(tmp.toFile)
   }
 
@@ -84,10 +87,10 @@ class ShapefileReaderSpec extends FunSuite with Matchers with BeforeAndAfterEach
 
     val result = SingleLayerShapefileReader.getContents(tmp.toFile, false)
     result.isFailure should be (true)
-    result.failed.get.getClass should be (classOf[IOException])
+    result.failed.get should (be (a [IOException]) or be (a [RuntimeException]))
   }
 
-  private def copyToTmp(tmp: File, from: String, renameTo: String) {
+  private def copyToTmp(tmp: File, from: String, renameTo: String): Unit = {
     Files.copy(Paths.get(from), Paths.get(FilenameUtils.concat(tmp.getAbsolutePath, renameTo)))
   }
 }

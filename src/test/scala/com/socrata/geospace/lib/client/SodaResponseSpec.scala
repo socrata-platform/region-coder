@@ -3,9 +3,10 @@ package com.socrata.geospace.lib.client
 import com.rojoma.json.v3.ast.{JObject, JString}
 import com.socrata.geospace.lib.client.SodaResponse._
 import com.socrata.soda.external.SodaFountainClient._
-import org.scalatest.{FunSuiteLike, Matchers}
+import org.scalatest.funsuite.AnyFunSuiteLike
+import org.scalatest.matchers.should.Matchers
 
-class SodaResponseSpec extends FunSuiteLike with Matchers {
+class SodaResponseSpec extends AnyFunSuiteLike with Matchers {
   test("Happy path") {
     val result = Response(201, Some(JObject(Map("yay" -> JString("success!")))))
     val checked = SodaResponse.check(result, 201)

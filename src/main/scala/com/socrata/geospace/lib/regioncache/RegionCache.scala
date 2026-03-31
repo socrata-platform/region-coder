@@ -6,8 +6,8 @@ import com.socrata.thirdparty.geojson.{FeatureCollectionJson, FeatureJson, GeoJs
 import com.socrata.thirdparty.metrics.Metrics
 import com.typesafe.config.Config
 import com.rojoma.json.v3.util.{AutomaticJsonEncodeBuilder, NullForNone}
-import com.vividsolutions.jts.geom.{Coordinate, Envelope, GeometryFactory, Polygon}
-import com.vividsolutions.jts.io.WKTWriter
+import org.locationtech.jts.geom.{Coordinate, Envelope, GeometryFactory, Polygon}
+import org.locationtech.jts.io.WKTWriter
 import org.geoscript.feature._
 import org.slf4j.LoggerFactory
 import scala.concurrent.ExecutionContext
