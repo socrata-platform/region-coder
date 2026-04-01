@@ -1,17 +1,17 @@
-@Library('socrata-pipeline-library@9.9.2') _
+@Library('socrata-pipeline-library@10.2.1') _
 
 commonPipeline(
     jobName: 'region-coder',
-    language: 'scala',
     defaultBuildWorker: 'worker-java-multi-pg13',
     projects: [
         [
             name: 'region-coder',
             compiled: true,
             deploymentEcosystem: 'ecs',
-            paths: [
-                dockerBuildContext: 'docker',
+            docker: [
+                buildContext: 'docker',
             ],
+            language: 'scala',
             type: 'service'
         ]
     ],
